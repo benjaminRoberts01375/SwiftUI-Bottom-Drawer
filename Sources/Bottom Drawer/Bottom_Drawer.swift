@@ -1,5 +1,5 @@
 // Created on 9/14/23 by Ben Roberts
-// Created for the infinite grid library
+// Created for the Bottom Drawer library
 //
 // Swift 5.0
 //
@@ -9,12 +9,22 @@ import SwiftUI
 @available(iOS 16.0, macOS 13.0, *)
 public struct BottomDrawer: View {
     private let cornerRadius = 20
+    @StateObject private var controller: BottomDrawerVM
     
-    public init () { }
+    public init(detents: Set<PresentationDetent>) {
+        self._controller = StateObject(
+            wrappedValue: BottomDrawerVM(detents: detents)
+        )
+    }
     
     public var body: some View {
-        ZStack {
-            EmptyView()
+        GeometryReader { geo in
+            VStack {
+                Text("Test")
+                Spacer()
+            }
+            .frame(width: geo.size.width, height: geo.size.height)
+            .background(.white)
         }
     }
 }
@@ -30,6 +40,6 @@ public struct BottomDrawer: View {
         LinearGradient(gradient: Gradient(colors: [color1, color2]), startPoint: .topLeading, endPoint: .bottomTrailing)
             .ignoresSafeArea()
         
-        BottomDrawer()
+        BottomDrawer(detents: [.fraction(1/2)])
     }
 }
