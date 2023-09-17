@@ -8,8 +8,13 @@ import SwiftUI
 
 @available(iOS 16.0, macOS 13.0, *)
 public struct BottomDrawer: View {
-    private let cornerRadius = 20
+    private let cornerRadius: CGFloat = 20
+    private let shadowRadius: CGFloat = 5
+    private var capsuleShadowRadius: CGFloat {
+        colorScheme == .dark ? 2 : 1
+    }
     @StateObject private var controller: BottomDrawerVM
+    @Environment(\.colorScheme) var colorScheme
     
     public init(detents: Set<Detents>) {
         self._controller = StateObject(
@@ -21,18 +26,30 @@ public struct BottomDrawer: View {
         GeometryReader { geo in
             VStack {
                 Spacer()
-                VStack {
-                    Text("Test")
-                    Spacer()
-                }
-                .frame(width: geo.size.width, height: 500)
-                .background(.white)
-                .onChange(of: geo.size) { size in
-                    controller.calculateAvailableHeights(screenSize: size)
-                }
-                .onAppear {
-                    controller.calculateAvailableHeights(screenSize: geo.size)
-                }
+                RoundedRectangle(cornerRadius: cornerRadius)
+                    .foregroundStyle(.regularMaterial.shadow(.inner(color: .black.opacity(0.3), radius: shadowRadius)))
+                    .shadow(radius: 2)
+                    .offset(y: geo.safeAreaInsets.bottom)
+                    .frame(height: 500)
+                    .overlay(content: {
+                        VStack {
+                            Capsule()
+                                .foregroundStyle(.gray)
+                                .frame(width: 50, height: 5)
+                                .padding(.top, 15)
+                                .padding(.bottom, 5)
+                                .shadow(radius: capsuleShadowRadius)
+                            Text("Placeholder View")
+                            Spacer()
+                        }
+                        .offset(y: geo.safeAreaInsets.bottom)
+                    })
+                    .onChange(of: geo.size) { size in
+                        controller.calculateAvailableHeights(screenSize: size)
+                    }
+                    .onAppear {
+                        controller.calculateAvailableHeights(screenSize: geo.size)
+                    }
             }
         }
     }
