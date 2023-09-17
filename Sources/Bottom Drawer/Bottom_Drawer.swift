@@ -20,12 +20,13 @@ public struct BottomDrawer: View {
     var drawerDrag: some Gesture {
         DragGesture(coordinateSpace: .global)
             .onChanged { update in
-                controller.height -= update.translation.height - currentDrawerDrag
-                currentDrawerDrag = update.translation.height
-                
-                if controller.height < 0 {
-                    controller.height = 0
+                withAnimation(.easeInOut(duration: 0.05)) {
+                    controller.height -= update.translation.height - currentDrawerDrag
+                    if controller.height < 0 {
+                        controller.height = 0
+                    }
                 }
+                currentDrawerDrag = update.translation.height
             }
             .onEnded { update in
                 currentDrawerDrag = 0
