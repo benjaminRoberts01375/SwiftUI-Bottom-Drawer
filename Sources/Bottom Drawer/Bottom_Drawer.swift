@@ -30,6 +30,7 @@ public struct BottomDrawer: View {
             }
             .onEnded { update in
                 currentDrawerDrag = 0
+                controller.snapToPoint()
             }
     }
     
