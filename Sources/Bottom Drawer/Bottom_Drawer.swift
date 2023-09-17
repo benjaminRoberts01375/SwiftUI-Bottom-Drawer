@@ -60,8 +60,6 @@ public struct BottomDrawer: View {
                             Spacer()
                         }
                     })
-                    .clipped()
-                    .offset(y: geo.safeAreaInsets.bottom)
                     .gesture(drawerDrag)
                     .onChange(of: geo.size) { size in
                         controller.calculateAvailableHeights(screenSize: size)
@@ -71,6 +69,7 @@ public struct BottomDrawer: View {
                     }
             }
         }
+        .ignoresSafeArea()
     }
 }
 
