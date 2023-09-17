@@ -15,19 +15,17 @@ public struct BottomDrawer: View {
     }
     @StateObject private var controller: BottomDrawerVM
     @Environment(\.colorScheme) var colorScheme
-    @State var height: CGFloat = 200
     @State var currentDrawerDrag: CGFloat = 0
     
     var drawerDrag: some Gesture {
         DragGesture(coordinateSpace: .global)
             .onChanged { update in
-                height -= update.translation.height - currentDrawerDrag
+                controller.height -= update.translation.height - currentDrawerDrag
                 currentDrawerDrag = update.translation.height
                 
-                if height < 0 {
-                    height = 0
+                if controller.height < 0 {
+                    controller.height = 0
                 }
-                print(height)
             }
             .onEnded { update in
                 currentDrawerDrag = 0
@@ -47,7 +45,7 @@ public struct BottomDrawer: View {
                 RoundedRectangle(cornerRadius: cornerRadius)
                     .foregroundStyle(.regularMaterial.shadow(.inner(color: .black.opacity(0.3), radius: shadowRadius)))
                     .shadow(radius: 2)
-                    .frame(height: height)
+                    .frame(height: controller.height)
                     .overlay(content: {
                         VStack {
                             Capsule()

@@ -9,10 +9,12 @@ import SwiftUI
 final class BottomDrawerVM: ObservableObject {
     private let detents: Set<Detents>
     private var availableHeights: [CGFloat]
+    @Published var height: CGFloat
     
     init(detents: Set<Detents>) {
         self.detents = detents
         self.availableHeights = []
+        self.height = 200
     }
     
     internal func calculateAvailableHeights(screenSize: CGSize) {
