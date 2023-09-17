@@ -11,7 +11,7 @@ public struct BottomDrawer: View {
     private let cornerRadius = 20
     @StateObject private var controller: BottomDrawerVM
     
-    public init(detents: Set<PresentationDetent>) {
+    public init(detents: Set<Detents>) {
         self._controller = StateObject(
             wrappedValue: BottomDrawerVM(detents: detents)
         )
@@ -20,11 +20,20 @@ public struct BottomDrawer: View {
     public var body: some View {
         GeometryReader { geo in
             VStack {
-                Text("Test")
                 Spacer()
+                VStack {
+                    Text("Test")
+                    Spacer()
+                }
+                .frame(width: geo.size.width, height: 500)
+                .background(.white)
+                .onChange(of: geo.size) { size in
+                    controller.calculateAvailableHeights(screenSize: size)
+                }
+                .onAppear {
+                    controller.calculateAvailableHeights(screenSize: geo.size)
+                }
             }
-            .frame(width: geo.size.width, height: geo.size.height)
-            .background(.white)
         }
     }
 }

@@ -7,9 +7,28 @@
 import SwiftUI
 
 final class BottomDrawerVM: ObservableObject {
-    private let detents: Set<PresentationDetent>
+    private let detents: Set<Detents>
+    private var availableHeights: [CGFloat]
     
-    init(detents: Set<PresentationDetent>) {
+    init(detents: Set<Detents>) {
         self.detents = detents
+        self.availableHeights = []
+    }
+    
+    internal func calculateAvailableHeights(screenSize: CGSize) {
+        for detent in detents {
+            switch detent {
+            case .large:
+                availableHeights.append(screenSize.height * 0.9)
+            case .medium:
+                availableHeights.append(screenSize.height * 0.5)
+            case .small:
+                availableHeights.append(150)
+            case .fraction(let fraction):
+                availableHeights.append(screenSize.height * fraction)
+            case .exactly(let height):
+                availableHeights.append(height)
+            }
+        }
     }
 }
