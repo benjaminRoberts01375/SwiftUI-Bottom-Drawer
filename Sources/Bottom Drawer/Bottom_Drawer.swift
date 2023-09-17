@@ -15,6 +15,24 @@ public struct BottomDrawer: View {
     }
     @StateObject private var controller: BottomDrawerVM
     @Environment(\.colorScheme) var colorScheme
+    @State var height: CGFloat = 200
+    @State var currentDrawerDrag: CGFloat = 0
+    
+    var drawerDrag: some Gesture {
+        DragGesture(coordinateSpace: .global)
+            .onChanged { update in
+                height -= update.translation.height - currentDrawerDrag
+                currentDrawerDrag = update.translation.height
+                
+                if height < 0 {
+                    height = 0
+                }
+                print(height)
+            }
+            .onEnded { update in
+                currentDrawerDrag = 0
+            }
+    }
     
     public init(detents: Set<Detents>) {
         self._controller = StateObject(
@@ -29,8 +47,7 @@ public struct BottomDrawer: View {
                 RoundedRectangle(cornerRadius: cornerRadius)
                     .foregroundStyle(.regularMaterial.shadow(.inner(color: .black.opacity(0.3), radius: shadowRadius)))
                     .shadow(radius: 2)
-                    .offset(y: geo.safeAreaInsets.bottom)
-                    .frame(height: 500)
+                    .frame(height: height)
                     .overlay(content: {
                         VStack {
                             Capsule()
@@ -42,8 +59,10 @@ public struct BottomDrawer: View {
                             Text("Placeholder View")
                             Spacer()
                         }
-                        .offset(y: geo.safeAreaInsets.bottom)
                     })
+                    .clipped()
+                    .offset(y: geo.safeAreaInsets.bottom)
+                    .gesture(drawerDrag)
                     .onChange(of: geo.size) { size in
                         controller.calculateAvailableHeights(screenSize: size)
                     }
