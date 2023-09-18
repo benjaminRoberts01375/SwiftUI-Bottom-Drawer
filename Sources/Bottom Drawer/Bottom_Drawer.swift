@@ -80,6 +80,6 @@ public struct BottomDrawer: View {
         LinearGradient(gradient: Gradient(colors: [color1, color2]), startPoint: .topLeading, endPoint: .bottomTrailing)
             .ignoresSafeArea()
         
-        BottomDrawer(detents: [.fraction(1/2)])
+        BottomDrawer(detents: [.small, .medium, .large])
     }
 }
