@@ -9,7 +9,8 @@ import SwiftUI
 final class BottomDrawerVM: ObservableObject {
     private let detents: Set<Detents>
     private var availableHeights: [CGFloat]
-    internal var viewHeight: CGFloat = 0
+    private var minDetentDelta: CGFloat = 30
+
     @Published var height: CGFloat {
         didSet {
             if height <= 0 {
@@ -17,6 +18,8 @@ final class BottomDrawerVM: ObservableObject {
             }
         }
     }
+
+    internal var viewHeight: CGFloat = 0
     
     init(detents: Set<Detents>) {
         self.detents = detents
@@ -35,12 +38,37 @@ final class BottomDrawerVM: ObservableObject {
             case .small:
                 availableHeights.append(screenSize.height * 0.2)
             case .fraction(let fraction):
-                availableHeights.append(screenSize.height * fraction)
+                height = screenSize.height * fraction
+                if height <= 0 { continue }
+                availableHeights.append(height)
             case .exactly(let height):
+                if height <= 0 { continue }
                 availableHeights.append(height)
             case .view:
                 availableHeights.append(viewHeight)
             }
+        }
+        
+        // Check to ensure heights are within screen limits
+        availableHeights = availableHeights.filter { $0 <= screenSize.height }.sorted()
+        
+        // Height range is crunched together shortcut
+        if (availableHeights.last ?? 0) - (availableHeights.first ?? 0) <= 30 {
+            availableHeights = [availableHeights.first ?? 0]
+            return
+        }
+        
+        // Remove any heights too close together
+        for height in availableHeights.dropLast() {
+            guard let index = availableHeights.firstIndex(of: height) else { continue }
+            if availableHeights[index + 1] - availableHeights[index] < minDetentDelta {
+                availableHeights.remove(at: index + 1)
+            }
+        }
+        
+        // Maintain the max value at the expense of the second to largest value
+        if availableHeights[availableHeights.count - 1] - availableHeights[availableHeights.count - 2] <= minDetentDelta {
+            availableHeights.remove(at: availableHeights.count - 2)
         }
     }
     
