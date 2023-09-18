@@ -74,7 +74,7 @@ final class BottomDrawerVM: ObservableObject {
     
     internal func snapToPoint(velocity: CGFloat) {
         if availableHeights.isEmpty { return }
-        let heightOffset = velocity
+        let heightOffset = velocity / 6
         let distanceToPoint: CGFloat = availableHeights.map({ $0 - height + heightOffset }).reduce(.greatestFiniteMagnitude, { abs($0) < abs($1) ? $0 : $1 })
         
         withAnimation(.bouncy(duration: abs(1000 / velocity).clamped(to: 0.15...0.5))) {
