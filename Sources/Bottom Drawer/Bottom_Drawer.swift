@@ -10,9 +10,6 @@ import SwiftUI
 public struct BottomDrawer: View {
     private let cornerRadius: CGFloat = 20
     private let shadowRadius: CGFloat = 5
-    private var capsuleShadowRadius: CGFloat {
-        colorScheme == .dark ? 2 : 1
-    }
     @StateObject private var controller: BottomDrawerVM
     @Environment(\.colorScheme) var colorScheme
     @State var currentDrawerDrag: CGFloat = 0
@@ -45,7 +42,7 @@ public struct BottomDrawer: View {
             VStack {
                 Spacer()
                 RoundedRectangle(cornerRadius: cornerRadius)
-                    .foregroundStyle(.regularMaterial.shadow(.inner(color: .black.opacity(0.3), radius: shadowRadius)))
+                    .foregroundStyle(.regularMaterial)
                     .shadow(radius: 2)
                     .frame(height: controller.height)
                     .overlay(content: {
@@ -55,7 +52,6 @@ public struct BottomDrawer: View {
                                 .frame(width: 50, height: 5)
                                 .padding(.top, 15)
                                 .padding(.bottom, 5)
-                                .shadow(radius: capsuleShadowRadius)
                             Text("Placeholder View")
                             Spacer()
                         }
