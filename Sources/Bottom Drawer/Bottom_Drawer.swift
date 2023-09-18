@@ -53,9 +53,17 @@ public struct BottomDrawer: View {
                                 .padding(.top, 15)
                                 .padding(.bottom, 5)
                             Text("Placeholder View")
+                            Text("Placeholder View")
+                            Text("Placeholder View")
+                            Text("Placeholder View")
+                            Text("Placeholder View")
+                            Text("Placeholder View")
+                            Text("Placeholder View")
+                            Text("Placeholder View")
                             Spacer()
                         }
                     })
+                    .clipped()
                     .gesture(drawerDrag)
                     .onChange(of: geo.size) { size in
                         controller.calculateAvailableHeights(screenSize: size)
