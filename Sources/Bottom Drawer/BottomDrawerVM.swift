@@ -9,6 +9,7 @@ import SwiftUI
 final class BottomDrawerVM: ObservableObject {
     private let detents: Set<Detents>
     private var availableHeights: [CGFloat]
+    internal var viewHeight: CGFloat = 0
     @Published var height: CGFloat {
         didSet {
             if height <= 0 {
@@ -37,6 +38,8 @@ final class BottomDrawerVM: ObservableObject {
                 availableHeights.append(screenSize.height * fraction)
             case .exactly(let height):
                 availableHeights.append(height)
+            case .view:
+                availableHeights.append(viewHeight)
             }
         }
     }

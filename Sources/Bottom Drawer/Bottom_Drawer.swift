@@ -45,24 +45,28 @@ public struct BottomDrawer: View {
                     .foregroundStyle(.regularMaterial)
                     .shadow(radius: 2)
                     .frame(height: controller.height)
-                    .overlay(content: {
-                        VStack {
-                            Capsule()
-                                .foregroundStyle(.gray)
-                                .frame(width: 50, height: 5)
-                                .padding(.top, 15)
-                                .padding(.bottom, 5)
-                            Text("Placeholder View")
-                            Text("Placeholder View")
-                            Text("Placeholder View")
-                            Text("Placeholder View")
-                            Text("Placeholder View")
-                            Text("Placeholder View")
-                            Text("Placeholder View")
-                            Text("Placeholder View")
-                            Spacer()
-                        }
-                    })
+                    .overlay(
+                        content: {
+                            VStack {
+                                VStack {
+                                    Capsule()
+                                        .foregroundStyle(.gray)
+                                        .frame(width: 50, height: 5)
+                                        .padding(.top, 15)
+                                        .padding(.bottom, 5)
+                                    Text("View height: \(controller.viewHeight)")
+                                }
+                                .background(
+                                    GeometryReader { viewGeo in
+                                        Color.clear
+                                            .onAppear {
+                                                controller.viewHeight = viewGeo.size.height
+                                            }
+                                    }
+                                )
+                                Spacer()
+                            }
+                        })
                     .clipped()
                     .gesture(drawerDrag)
                     .onChange(of: geo.size) { size in
@@ -83,11 +87,11 @@ public struct BottomDrawer: View {
     let color1 = colors.randomElement()!
     colors.remove(at: colors.firstIndex(of: color1)!)
     let color2 = colors.randomElement()!
- 
+    
     return ZStack {
         LinearGradient(gradient: Gradient(colors: [color1, color2]), startPoint: .topLeading, endPoint: .bottomTrailing)
             .ignoresSafeArea()
         
-        BottomDrawer(detents: [.small, .medium, .large])
+        BottomDrawer(detents: [.small, .medium, .large, .view])
     }
 }

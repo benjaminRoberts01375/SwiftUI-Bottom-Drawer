@@ -12,4 +12,5 @@ public enum Detents: Hashable {
     case large
     case fraction(CGFloat)
     case exactly(CGFloat)
+    case view
 }
