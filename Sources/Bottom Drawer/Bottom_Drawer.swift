@@ -69,11 +69,21 @@ public struct BottomDrawer: View {
                         })
                     .clipped()
                     .gesture(drawerDrag)
-                    .onChange(of: geo.size) { size in
-                        controller.calculateAvailableHeights(screenSize: size)
+                    .onChange(of: geo) { newGeo in
+                        controller.calculateAvailableHeights(
+                            screenSize: CGSize(
+                                width: newGeo.safeAreaInsets.leading + newGeo.safeAreaInsets.trailing + newGeo.size.width,
+                                height: newGeo.safeAreaInsets.top + newGeo.safeAreaInsets.bottom + newGeo.size.height
+                            )
+                        )
                     }
                     .onAppear {
-                        controller.calculateAvailableHeights(screenSize: geo.size)
+                        controller.calculateAvailableHeights(
+                            screenSize: CGSize(
+                                width: geo.size.width + geo.safeAreaInsets.leading + geo.safeAreaInsets.trailing,
+                                height: geo.size.height + geo.safeAreaInsets.top + geo.safeAreaInsets.bottom
+                            )
+                        )
                     }
             }
         }
