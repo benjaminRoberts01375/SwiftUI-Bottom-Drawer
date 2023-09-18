@@ -70,10 +70,12 @@ public struct BottomDrawer: View {
                     .clipped()
                     .gesture(drawerDrag)
                     .onChange(of: geo) { newGeo in
+                        let width: CGFloat = newGeo.safeAreaInsets.leading + newGeo.safeAreaInsets.trailing + newGeo.size.width
+                        let height: CGFloat = newGeo.safeAreaInsets.top + newGeo.safeAreaInsets.bottom + newGeo.size.height
                         controller.calculateAvailableHeights(
                             screenSize: CGSize(
-                                width: newGeo.safeAreaInsets.leading + newGeo.safeAreaInsets.trailing + newGeo.size.width,
-                                height: newGeo.safeAreaInsets.top + newGeo.safeAreaInsets.bottom + newGeo.size.height
+                                width: width,
+                                height: height
                             )
                         )
                     }
