@@ -26,8 +26,8 @@ public struct BottomDrawer: View {
                 currentDrawerDrag = update.translation.height
             }
             .onEnded { update in
+                controller.snapToPoint(velocity: update.velocity.height)
                 currentDrawerDrag = 0
-                controller.snapToPoint()
             }
     }
     
