@@ -77,7 +77,7 @@ final class BottomDrawerVM: ObservableObject {
         let heightOffset = velocity
         let distanceToPoint: CGFloat = availableHeights.map({ $0 - height + heightOffset }).reduce(.greatestFiniteMagnitude, { abs($0) < abs($1) ? $0 : $1 })
         
-        withAnimation(.bouncy(duration: min(abs(1000 / velocity), 0.5))) {
+        withAnimation(.bouncy(duration: abs(1000 / velocity).clamped(to: 0.15...0.5))) {
             height += distanceToPoint - heightOffset
         }
     }
