@@ -9,7 +9,13 @@ import SwiftUI
 final class BottomDrawerVM: ObservableObject {
     private let detents: Set<Detents>
     private var availableHeights: [CGFloat]
-    @Published var height: CGFloat
+    @Published var height: CGFloat {
+        didSet {
+            if height <= 0 {
+                height = 50
+            }
+        }
+    }
     
     init(detents: Set<Detents>) {
         self.detents = detents
@@ -18,6 +24,7 @@ final class BottomDrawerVM: ObservableObject {
     }
     
     internal func calculateAvailableHeights(screenSize: CGSize) {
+        if detents.isEmpty { return }
         for detent in detents {
             switch detent {
             case .large:
@@ -35,6 +42,7 @@ final class BottomDrawerVM: ObservableObject {
     }
     
     internal func snapToPoint(velocity: CGFloat) {
+        if availableHeights.isEmpty { return }
         let heightOffset = velocity / 8
         let distanceToPoint: CGFloat = availableHeights.map({ $0 - height + heightOffset }).reduce(.greatestFiniteMagnitude, { abs($0) < abs($1) ? $0 : $1 })
         withAnimation(.bouncy()) {
