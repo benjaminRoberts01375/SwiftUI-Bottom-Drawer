@@ -11,7 +11,6 @@ public struct BottomDrawer: View {
     private let cornerRadius: CGFloat = 20
     private let shadowRadius: CGFloat = 5
     @StateObject private var controller: BottomDrawerVM
-    @Environment(\.colorScheme) var colorScheme
     @State var currentDrawerDrag: CGFloat = 0
     
     var transparency: CGFloat {
