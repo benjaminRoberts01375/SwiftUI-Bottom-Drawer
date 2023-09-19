@@ -57,28 +57,34 @@ final class BottomDrawerVM: ObservableObject {
         // Check to ensure heights are within screen limits
         availableHeights = availableHeights.filter { $0 <= screenSize.height }.sorted()
         
+        filterDimensions(availables: &availableHeights)
+    }
+    
+    internal func calculateAvailableWidths(screenSize: CGSize) {
+        
+    }
+    
+    private func filterDimensions(availables: inout [CGFloat]) {
+        let first = availables.first ?? 0
+        
         // Height range is crunched together shortcut
-        if (availableHeights.last ?? 0) - (availableHeights.first ?? 0) <= 30 {
-            availableHeights = [availableHeights.first ?? 0]
+        if (availables.last ?? 0) - first <= minDetentDelta {
+            availables = [first]
             return
         }
         
         // Remove any heights too close together
-        for height in availableHeights.dropLast() {
-            guard let index = availableHeights.firstIndex(of: height) else { continue }
-            if availableHeights[index + 1] - availableHeights[index] < minDetentDelta {
+        for available in availables.dropLast() {
+            guard let index = availables.firstIndex(of: available) else { continue }
+            if availables[index + 1] - availables[index] < minDetentDelta {
                 availableHeights.remove(at: index + 1)
             }
         }
         
         // Maintain the max value at the expense of the second to largest value
-        if availableHeights[availableHeights.count - 1] - availableHeights[availableHeights.count - 2] <= minDetentDelta {
-            availableHeights.remove(at: availableHeights.count - 2)
+        if availables[availables.count - 1] - availables[availables.count - 2] <= minDetentDelta {
+            availables.remove(at: availables.count - 2)
         }
-    }
-    
-    internal func calculateAvailableWidths(screenSize: CGSize) {
-        
     }
     
     internal func calculateIsShortCard(size: CGSize) {
