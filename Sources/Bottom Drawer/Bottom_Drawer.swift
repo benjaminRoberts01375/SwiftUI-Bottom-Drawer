@@ -11,7 +11,7 @@ public struct BottomDrawer: View {
     private let cornerRadius: CGFloat = 20
     private let shadowRadius: CGFloat = 5
     @StateObject private var controller: BottomDrawerVM
-    @State var currentDrawerDrag: CGFloat = 0
+    @State var currentDrawerDrag: CGSize = .zero
     
     var transparency: CGFloat {
         get {
@@ -27,16 +27,14 @@ public struct BottomDrawer: View {
         DragGesture(coordinateSpace: .global)
             .onChanged { update in
                 withAnimation(.easeInOut(duration: 0.05)) {
-                    controller.height -= update.translation.height - currentDrawerDrag
-                    if controller.height < 0 {
-                        controller.height = 0
-                    }
+                    controller.height -= update.translation.height - currentDrawerDrag.height
+                    controller.xPos += update.translation.width - currentDrawerDrag.width
                 }
-                currentDrawerDrag = update.translation.height
+                currentDrawerDrag = update.translation
             }
             .onEnded { update in
                 controller.snapToPoint(velocity: update.velocity.height)
-                currentDrawerDrag = 0
+                currentDrawerDrag = .zero
             }
     }
     
@@ -115,6 +113,7 @@ public struct BottomDrawer: View {
                 .ignoresSafeArea()
             }
         }
+        .offset(x: controller.isShortCard ? controller.xPos : 0)
     }
 }
 

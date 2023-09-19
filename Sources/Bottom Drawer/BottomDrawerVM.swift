@@ -18,6 +18,8 @@ final class BottomDrawerVM: ObservableObject {
             }
         }
     }
+    @Published var xPos: CGFloat = 0
+    
     internal let shortCardSize: CGFloat = 300
     internal let requiredFreeWidth: CGFloat = 400
     @Published internal var isShortCard: Bool = false
