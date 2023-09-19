@@ -14,3 +14,9 @@ public enum VerticalDetents: Hashable {
     case exactly(CGFloat)
     case view
 }
+
+public enum HorizontalDetents: Hashable {
+    case left
+    case right
+    case center
+}
