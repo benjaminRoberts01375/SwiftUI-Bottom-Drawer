@@ -38,9 +38,9 @@ public struct BottomDrawer: View {
             }
     }
     
-    public init(detents: Set<VerticalDetents>) {
+    public init(verticalDetents: Set<VerticalDetents>) {
         self._controller = StateObject(
-            wrappedValue: BottomDrawerVM(detents: detents)
+            wrappedValue: BottomDrawerVM(verticalDetents: verticalDetents)
         )
     }
     

@@ -7,7 +7,7 @@
 import SwiftUI
 
 final class BottomDrawerVM: ObservableObject {
-    private let detents: Set<VerticalDetents>
+    private let verticalDetents: Set<VerticalDetents>
     internal var availableHeights: [CGFloat]
     private var minDetentDelta: CGFloat = 30
     
@@ -26,15 +26,15 @@ final class BottomDrawerVM: ObservableObject {
     
     internal var viewHeight: CGFloat = 0
     
-    init(detents: Set<VerticalDetents>) {
-        self.detents = detents
+    init(verticalDetents: Set<VerticalDetents>) {
+        self.verticalDetents = verticalDetents
         self.availableHeights = []
         self.height = 200
     }
     
     internal func calculateAvailableHeights(screenSize: CGSize) {
-        if detents.isEmpty { return }
-        for detent in detents {
+        if verticalDetents.isEmpty { return }
+        for detent in verticalDetents {
             switch detent {
             case .large:
                 availableHeights.append(screenSize.height)
@@ -75,6 +75,10 @@ final class BottomDrawerVM: ObservableObject {
         if availableHeights[availableHeights.count - 1] - availableHeights[availableHeights.count - 2] <= minDetentDelta {
             availableHeights.remove(at: availableHeights.count - 2)
         }
+    }
+    
+    internal func calculateAvailableWidths(screenSize: CGSize) {
+        
     }
     
     internal func calculateIsShortCard(size: CGSize) {
