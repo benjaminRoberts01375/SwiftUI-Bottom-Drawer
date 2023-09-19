@@ -38,9 +38,12 @@ public struct BottomDrawer: View {
             }
     }
     
-    public init(verticalDetents: Set<VerticalDetents>) {
+    public init(verticalDetents: Set<VerticalDetents>, horizontalDetents: Set<HorizontalDetents>) {
         self._controller = StateObject(
-            wrappedValue: BottomDrawerVM(verticalDetents: verticalDetents)
+            wrappedValue: BottomDrawerVM(
+                verticalDetents: verticalDetents,
+                horizontalDetents: horizontalDetents
+            )
         )
     }
     
@@ -128,6 +131,9 @@ public struct BottomDrawer: View {
         LinearGradient(gradient: Gradient(colors: [color1, color2]), startPoint: .topLeading, endPoint: .bottomTrailing)
             .ignoresSafeArea()
         
-        BottomDrawer(detents: [.small, .medium, .large, .view])
+        BottomDrawer(
+            verticalDetents: [.small, .medium, .large, .view],
+            horizontalDetents: [.left, .right, .center]
+        )
     }
 }

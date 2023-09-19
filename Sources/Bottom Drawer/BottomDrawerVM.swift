@@ -8,7 +8,9 @@ import SwiftUI
 
 final class BottomDrawerVM: ObservableObject {
     private let verticalDetents: Set<VerticalDetents>
+    private let horizontalDetents: Set<HorizontalDetents>
     internal var availableHeights: [CGFloat]
+    internal var availableWidths: [CGFloat]
     private var minDetentDelta: CGFloat = 30
     
     @Published var height: CGFloat {
@@ -26,9 +28,11 @@ final class BottomDrawerVM: ObservableObject {
     
     internal var viewHeight: CGFloat = 0
     
-    init(verticalDetents: Set<VerticalDetents>) {
+    init(verticalDetents: Set<VerticalDetents>, horizontalDetents: Set<HorizontalDetents>) {
         self.verticalDetents = verticalDetents
+        self.horizontalDetents = horizontalDetents
         self.availableHeights = []
+        self.availableWidths = []
         self.height = 200
     }
     
