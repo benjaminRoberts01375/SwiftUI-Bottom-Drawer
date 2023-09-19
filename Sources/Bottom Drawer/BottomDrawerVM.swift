@@ -32,7 +32,7 @@ final class BottomDrawerVM: ObservableObject {
         for detent in detents {
             switch detent {
             case .large:
-                availableHeights.append(screenSize.height * 0.95)
+                availableHeights.append(screenSize.height)
             case .medium:
                 availableHeights.append(screenSize.height * 0.5)
             case .small:

@@ -51,10 +51,11 @@ public struct BottomDrawer: View {
         ZStack {
             Color.black
                 .opacity(transparency)
+                .ignoresSafeArea()
                 .allowsHitTesting(false)
             GeometryReader { geo in
                 VStack {
-                    Spacer(minLength: geo.size.height - controller.height)
+                    Spacer(minLength: geo.size.height - controller.height + geo.safeAreaInsets.top + geo.safeAreaInsets.bottom)
                     RoundedRectangle(cornerRadius: cornerRadius)
                         .foregroundStyle(.regularMaterial)
                         .shadow(radius: 2)
@@ -84,8 +85,8 @@ public struct BottomDrawer: View {
                         .clipped()
                         .gesture(drawerDrag)
                         .onChange(of: geo) { newGeo in
-                            let width: CGFloat = newGeo.safeAreaInsets.leading + newGeo.safeAreaInsets.trailing + newGeo.size.width
-                            let height: CGFloat = newGeo.safeAreaInsets.top + newGeo.safeAreaInsets.bottom + newGeo.size.height
+                            let width: CGFloat = newGeo.size.width
+                            let height: CGFloat = newGeo.size.height + newGeo.safeAreaInsets.bottom
                             controller.calculateAvailableHeights(
                                 screenSize: CGSize(
                                     width: width,
@@ -96,15 +97,15 @@ public struct BottomDrawer: View {
                         .onAppear {
                             controller.calculateAvailableHeights(
                                 screenSize: CGSize(
-                                    width: geo.size.width + geo.safeAreaInsets.leading + geo.safeAreaInsets.trailing,
-                                    height: geo.size.height + geo.safeAreaInsets.top + geo.safeAreaInsets.bottom
+                                    width: geo.size.width,
+                                    height: geo.size.height + geo.safeAreaInsets.bottom
                                 )
                             )
                         }
                 }
+                .ignoresSafeArea()
             }
         }
-        .ignoresSafeArea()
     }
 }
 
