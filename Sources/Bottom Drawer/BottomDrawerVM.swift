@@ -10,7 +10,7 @@ final class BottomDrawerVM: ObservableObject {
     private let detents: Set<Detents>
     internal var availableHeights: [CGFloat]
     private var minDetentDelta: CGFloat = 30
-
+    
     @Published var height: CGFloat {
         didSet {
             if height <= 0 {
@@ -18,7 +18,10 @@ final class BottomDrawerVM: ObservableObject {
             }
         }
     }
-
+    internal let shortCardSize: CGFloat = 300
+    internal let requiredFreeWidth: CGFloat = 400
+    @Published internal var isShortCard: Bool = false
+    
     internal var viewHeight: CGFloat = 0
     
     init(detents: Set<Detents>) {
@@ -70,6 +73,11 @@ final class BottomDrawerVM: ObservableObject {
         if availableHeights[availableHeights.count - 1] - availableHeights[availableHeights.count - 2] <= minDetentDelta {
             availableHeights.remove(at: availableHeights.count - 2)
         }
+    }
+    
+    internal func calculateIsShortCard(size: CGSize) {
+        isShortCard = size.width >= shortCardSize + requiredFreeWidth
+        snapToPoint(velocity: 0)
     }
     
     internal func snapToPoint(velocity: CGFloat) {

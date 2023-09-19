@@ -49,17 +49,22 @@ public struct BottomDrawer: View {
     
     public var body: some View {
         ZStack {
-            Color.black
-                .opacity(transparency)
-                .ignoresSafeArea()
-                .allowsHitTesting(false)
+            if !controller.isShortCard {
+                Color.black
+                    .opacity(transparency)
+                    .ignoresSafeArea()
+                    .allowsHitTesting(false)
+            }
             GeometryReader { geo in
                 VStack {
                     Spacer(minLength: geo.size.height - controller.height + geo.safeAreaInsets.top + geo.safeAreaInsets.bottom)
                     RoundedRectangle(cornerRadius: cornerRadius)
                         .foregroundStyle(.regularMaterial)
                         .shadow(radius: 2)
-                        .frame(height: controller.height)
+                        .frame(
+                            width: controller.isShortCard ? controller.shortCardSize : geo.size.width,
+                            height: controller.height
+                        )
                         .overlay(
                             content: {
                                 VStack {
@@ -69,7 +74,8 @@ public struct BottomDrawer: View {
                                             .frame(width: 50, height: 5)
                                             .padding(.top, 15)
                                             .padding(.bottom, 5)
-                                        Text("View height: \(controller.viewHeight)")
+                                        Text("Is short: \(controller.isShortCard ? "Yes." : "No.") \(geo.size.width)pt")
+                                        Text("Height: \(controller.height)")
                                     }
                                     .background(
                                         GeometryReader { viewGeo in
@@ -84,15 +90,16 @@ public struct BottomDrawer: View {
                             })
                         .clipped()
                         .gesture(drawerDrag)
-                        .onChange(of: geo) { newGeo in
-                            let width: CGFloat = newGeo.size.width
-                            let height: CGFloat = newGeo.size.height + newGeo.safeAreaInsets.bottom
+                        .onChange(of: geo.size) { size in
+                            let width: CGFloat = size.width
+                            let height: CGFloat = size.height + geo.safeAreaInsets.bottom
                             controller.calculateAvailableHeights(
                                 screenSize: CGSize(
                                     width: width,
                                     height: height
                                 )
                             )
+                            controller.calculateIsShortCard(size: size)
                         }
                         .onAppear {
                             controller.calculateAvailableHeights(
@@ -101,8 +108,11 @@ public struct BottomDrawer: View {
                                     height: geo.size.height + geo.safeAreaInsets.bottom
                                 )
                             )
+                            controller.calculateIsShortCard(size: geo.size)
                         }
                 }
+                .padding(.leading, geo.safeAreaInsets.leading)
+                .padding(.trailing, geo.safeAreaInsets.trailing)
                 .ignoresSafeArea()
             }
         }
