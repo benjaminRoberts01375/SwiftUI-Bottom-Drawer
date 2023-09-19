@@ -6,7 +6,7 @@
 
 import Foundation
 
-public enum Detents: Hashable {
+public enum VerticalDetents: Hashable {
     case small
     case medium
     case large
