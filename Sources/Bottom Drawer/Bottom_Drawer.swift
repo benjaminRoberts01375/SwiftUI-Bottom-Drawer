@@ -14,6 +14,16 @@ public struct BottomDrawer: View {
     @Environment(\.colorScheme) var colorScheme
     @State var currentDrawerDrag: CGFloat = 0
     
+    var transparency: CGFloat {
+        get {
+            if controller.availableHeights.isEmpty { return 0 }
+            let maxHeight = controller.availableHeights[controller.availableHeights.count - 1]
+            let fadeAtPercent = 0.75
+            let maxFade = 0.5
+            return ((controller.height - maxHeight * fadeAtPercent) / (maxHeight * (1 - fadeAtPercent)) * maxFade).clamped(to: 0...maxFade)
+        }
+    }
+    
     var drawerDrag: some Gesture {
         DragGesture(coordinateSpace: .global)
             .onChanged { update in
@@ -38,55 +48,60 @@ public struct BottomDrawer: View {
     }
     
     public var body: some View {
-        GeometryReader { geo in
-            VStack {
-                Spacer()
-                RoundedRectangle(cornerRadius: cornerRadius)
-                    .foregroundStyle(.regularMaterial)
-                    .shadow(radius: 2)
-                    .frame(height: controller.height)
-                    .overlay(
-                        content: {
-                            VStack {
+        ZStack {
+            Color.black
+                .opacity(transparency)
+                .allowsHitTesting(false)
+            GeometryReader { geo in
+                VStack {
+                    Spacer(minLength: geo.size.height - controller.height)
+                    RoundedRectangle(cornerRadius: cornerRadius)
+                        .foregroundStyle(.regularMaterial)
+                        .shadow(radius: 2)
+                        .frame(height: controller.height)
+                        .overlay(
+                            content: {
                                 VStack {
-                                    Capsule()
-                                        .foregroundStyle(.gray)
-                                        .frame(width: 50, height: 5)
-                                        .padding(.top, 15)
-                                        .padding(.bottom, 5)
-                                    Text("View height: \(controller.viewHeight)")
-                                }
-                                .background(
-                                    GeometryReader { viewGeo in
-                                        Color.clear
-                                            .onAppear {
-                                                controller.viewHeight = viewGeo.size.height
-                                            }
+                                    VStack {
+                                        Capsule()
+                                            .foregroundStyle(.gray)
+                                            .frame(width: 50, height: 5)
+                                            .padding(.top, 15)
+                                            .padding(.bottom, 5)
+                                        Text("View height: \(controller.viewHeight)")
                                     }
+                                    .background(
+                                        GeometryReader { viewGeo in
+                                            Color.clear
+                                                .onAppear {
+                                                    controller.viewHeight = viewGeo.size.height
+                                                }
+                                        }
+                                    )
+                                    Spacer()
+                                }
+                            })
+                        .clipped()
+                        .gesture(drawerDrag)
+                        .onChange(of: geo) { newGeo in
+                            let width: CGFloat = newGeo.safeAreaInsets.leading + newGeo.safeAreaInsets.trailing + newGeo.size.width
+                            let height: CGFloat = newGeo.safeAreaInsets.top + newGeo.safeAreaInsets.bottom + newGeo.size.height
+                            controller.calculateAvailableHeights(
+                                screenSize: CGSize(
+                                    width: width,
+                                    height: height
                                 )
-                                Spacer()
-                            }
-                        })
-                    .clipped()
-                    .gesture(drawerDrag)
-                    .onChange(of: geo) { newGeo in
-                        let width: CGFloat = newGeo.safeAreaInsets.leading + newGeo.safeAreaInsets.trailing + newGeo.size.width
-                        let height: CGFloat = newGeo.safeAreaInsets.top + newGeo.safeAreaInsets.bottom + newGeo.size.height
-                        controller.calculateAvailableHeights(
-                            screenSize: CGSize(
-                                width: width,
-                                height: height
                             )
-                        )
-                    }
-                    .onAppear {
-                        controller.calculateAvailableHeights(
-                            screenSize: CGSize(
-                                width: geo.size.width + geo.safeAreaInsets.leading + geo.safeAreaInsets.trailing,
-                                height: geo.size.height + geo.safeAreaInsets.top + geo.safeAreaInsets.bottom
+                        }
+                        .onAppear {
+                            controller.calculateAvailableHeights(
+                                screenSize: CGSize(
+                                    width: geo.size.width + geo.safeAreaInsets.leading + geo.safeAreaInsets.trailing,
+                                    height: geo.size.height + geo.safeAreaInsets.top + geo.safeAreaInsets.bottom
+                                )
                             )
-                        )
-                    }
+                        }
+                }
             }
         }
         .ignoresSafeArea()
