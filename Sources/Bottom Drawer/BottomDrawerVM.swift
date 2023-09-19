@@ -81,7 +81,7 @@ final class BottomDrawerVM: ObservableObject {
         for available in availables.dropLast() {
             guard let index = availables.firstIndex(of: available) else { continue }
             if availables[index + 1] - availables[index] < minDetentDelta {
-                availableHeights.remove(at: index + 1)
+                availables.remove(at: index + 1)
             }
         }
         
