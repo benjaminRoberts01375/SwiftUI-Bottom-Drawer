@@ -33,7 +33,7 @@ public struct BottomDrawer: View {
                 currentDrawerDrag = update.translation
             }
             .onEnded { update in
-                controller.snapToPoint(velocity: update.velocity.height)
+                controller.snapToPoint(velocity: update.velocity)
                 currentDrawerDrag = .zero
             }
     }
@@ -91,24 +91,16 @@ public struct BottomDrawer: View {
                         .clipped()
                         .gesture(drawerDrag)
                         .onChange(of: geo.size) { size in
-                            let width: CGFloat = size.width
-                            let height: CGFloat = size.height + geo.safeAreaInsets.bottom
-                            controller.calculateAvailableHeights(
-                                screenSize: CGSize(
-                                    width: width,
-                                    height: height
-                                )
-                            )
+                            let sizeCalculation: CGSize = CGSize(width: size.width, height: size.height + geo.safeAreaInsets.bottom)
                             controller.calculateIsShortCard(size: size)
+                            controller.calculateAvailableHeights(screenSize: sizeCalculation)
+                            controller.calculateAvailableWidths(screenSize: sizeCalculation)
                         }
                         .onAppear {
-                            controller.calculateAvailableHeights(
-                                screenSize: CGSize(
-                                    width: geo.size.width,
-                                    height: geo.size.height + geo.safeAreaInsets.bottom
-                                )
-                            )
+                            let sizeCalculation: CGSize = CGSize(width: geo.size.width, height: geo.size.height + geo.safeAreaInsets.bottom)
                             controller.calculateIsShortCard(size: geo.size)
+                            controller.calculateAvailableHeights(screenSize: sizeCalculation)
+                            controller.calculateAvailableWidths(screenSize: sizeCalculation)
                         }
                 }
                 .padding(.leading, geo.safeAreaInsets.leading)

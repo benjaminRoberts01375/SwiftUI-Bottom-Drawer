@@ -65,7 +65,24 @@ final class BottomDrawerVM: ObservableObject {
     }
     
     internal func calculateAvailableWidths(screenSize: CGSize) {
+        if !isShortCard {
+            availableWidths = [0]
+            return
+        }
         
+        for detent in horizontalDetents {
+            switch detent {
+            case .left:
+                availableWidths.append(0)
+            case .right:
+                availableWidths.append(screenSize.width - shortCardSize)
+            case .center:
+                availableWidths.append((screenSize.width - shortCardSize) / 2)
+            }
+            
+            availableWidths = availableWidths.sorted()
+            filterDimensions(availables: &availableWidths)
+        }
     }
     
     private func filterDimensions(availables: inout [CGFloat]) {
@@ -93,16 +110,28 @@ final class BottomDrawerVM: ObservableObject {
     
     internal func calculateIsShortCard(size: CGSize) {
         isShortCard = size.width >= shortCardSize + requiredFreeWidth
-        snapToPoint(velocity: 0)
+        snapToPoint(velocity: .zero)
     }
     
-    internal func snapToPoint(velocity: CGFloat) {
-        if availableHeights.isEmpty { return }
-        let heightOffset = velocity / 6
-        let distanceToPoint: CGFloat = availableHeights.map({ $0 - height + heightOffset }).reduce(.greatestFiniteMagnitude, { abs($0) < abs($1) ? $0 : $1 })
+    private func calculateSnap(snapPoints: [CGFloat], currentPosition: CGFloat, offset: CGFloat = 0) -> CGFloat {
+        let distanceToPoint: CGFloat = snapPoints.map({ $0 - currentPosition + offset }).reduce(.greatestFiniteMagnitude, { abs($0) < abs($1) ? $0 : $1 })
+        return distanceToPoint - offset
+    }
+    
+    internal func snapToPoint(velocity: CGSize) {
+        var animation: (CGFloat) -> Animation { { velocity in
+            return .bouncy(duration: abs(1000 / velocity).clamped(to: 0.2...0.5))
+        }}
         
-        withAnimation(.bouncy(duration: abs(1000 / velocity).clamped(to: 0.15...0.5))) {
-            height += distanceToPoint - heightOffset
+        if availableHeights.count > 0 {
+            withAnimation(animation(velocity.height)) {
+                height += calculateSnap(snapPoints: availableHeights, currentPosition: height, offset: velocity.height / 6)
+            }
+        }
+        if availableWidths.count > 0 {
+            withAnimation(animation(velocity.width)) {
+                xPos += calculateSnap(snapPoints: availableWidths, currentPosition: xPos, offset: -velocity.width / 10)
+            }
         }
     }
 }
