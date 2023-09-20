@@ -12,6 +12,7 @@ public struct BottomDrawer: View {
     private let shadowRadius: CGFloat = 5
     @StateObject private var controller: BottomDrawerVM
     @State var currentDrawerDrag: CGSize = .zero
+    private let minDragDistance: CGFloat = 80
     
     var transparency: CGFloat {
         get {
@@ -28,7 +29,7 @@ public struct BottomDrawer: View {
             .onChanged { update in
                 withAnimation(.easeInOut(duration: 0.05)) {
                     controller.height -= update.translation.height - currentDrawerDrag.height
-                    controller.xPos += update.translation.width - currentDrawerDrag.width
+                    controller.xPos += controller.isShortCard && abs(update.translation.width) >= minDragDistance ? update.translation.width - currentDrawerDrag.width : 0
                 }
                 currentDrawerDrag = update.translation
             }
