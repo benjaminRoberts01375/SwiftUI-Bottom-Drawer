@@ -24,11 +24,33 @@ public struct BottomDrawer: View {
         }
     }
     
+    private func calculateY(heightDelta: CGFloat, dampening: (CGFloat, CGFloat) -> CGFloat) {
+        guard let maxSnapPoint = controller.availableHeights.max(),
+              let minSnapPoint = controller.availableHeights.min()
+        else { return }
+        
+        if controller.height > maxSnapPoint {
+            let distanceAboveMax = controller.height - maxSnapPoint
+            controller.height -= dampening(heightDelta, distanceAboveMax)
+        }
+        else if controller.height < minSnapPoint {
+            let distanceBelowMin = minSnapPoint - controller.height
+            controller.height -= dampening(heightDelta, distanceBelowMin)
+        }
+        else {
+            controller.height -= heightDelta
+        }
+    }
+    
     var drawerDrag: some Gesture {
         DragGesture(coordinateSpace: .global)
             .onChanged { update in
+                let dampening = { (dragAmount: CGFloat, distancePast: CGFloat) -> CGFloat in                        // Handle dampening when user drags drawer out of bounds
+                    return dragAmount * pow(distancePast / 10 + 1, -3 / 2)
+                }
+                
                 withAnimation(.easeInOut(duration: 0.05)) {
-                    controller.height -= update.translation.height - currentDrawerDrag.height
+                    calculateY(heightDelta: update.translation.height - currentDrawerDrag.height, dampening: dampening)
                     controller.xPos += controller.isShortCard && abs(update.translation.width) >= minDragDistance ? update.translation.width - currentDrawerDrag.width : 0
                 }
                 currentDrawerDrag = update.translation
