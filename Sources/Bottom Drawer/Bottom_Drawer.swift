@@ -136,12 +136,14 @@ public struct BottomDrawer: View {
                             controller.calculateIsShortCard(size: size)
                             controller.calculateAvailableHeights(screenSize: sizeCalculation)
                             controller.calculateAvailableWidths(screenSize: sizeCalculation)
+                            controller.snapToPoint()
                         }
                         .onAppear {
                             let sizeCalculation: CGSize = CGSize(width: geo.size.width, height: geo.size.height + geo.safeAreaInsets.bottom)
                             controller.calculateIsShortCard(size: geo.size)
                             controller.calculateAvailableHeights(screenSize: sizeCalculation)
                             controller.calculateAvailableWidths(screenSize: sizeCalculation)
+                            controller.snapToPoint()
                         }
                 }
                 .padding(.leading, geo.safeAreaInsets.leading)
