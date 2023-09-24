@@ -12,7 +12,7 @@ public struct BottomDrawer: View {
     private let shadowRadius: CGFloat = 5
     @StateObject private var controller: BottomDrawerVM
     @State var currentDrawerDrag: CGSize = .zero
-    private let minDragDistance: CGFloat = 80
+    private let minDragDistance: CGFloat = 40
     
     var transparency: CGFloat {
         get {
@@ -42,17 +42,34 @@ public struct BottomDrawer: View {
         }
     }
     
+    private func calculateX(dragValue: DragGesture.Value, dampening: (CGFloat, CGFloat) -> CGFloat) {
+        if !controller.isShortCard { return }
+        if abs(dragValue.translation.width) < minDragDistance { return }
+        let xFrameDelta = dragValue.translation.width - currentDrawerDrag.width
+        
+        guard let nearestSnapPointToGesture = controller.availableWidths.min(by: { abs($0 - dragValue.location.x + controller.shortCardSize / 2) < abs($1 - dragValue.location.x + controller.shortCardSize / 2) }),
+              let nearestSnapPointToDrawer = controller.availableWidths.min(by: { abs($0 - controller.xPos) < abs($1 - controller.xPos) })
+        else { return }
+        
+        withAnimation(.easeInOut) {
+            if nearestSnapPointToGesture == nearestSnapPointToDrawer {
+                controller.xPos += dampening(xFrameDelta, abs(controller.xPos - nearestSnapPointToDrawer))
+            }
+            else {
+                controller.xPos = nearestSnapPointToGesture
+            }
+        }
+    }
+    
     var drawerDrag: some Gesture {
         DragGesture(coordinateSpace: .global)
             .onChanged { update in
                 let dampening = { (dragAmount: CGFloat, distancePast: CGFloat) -> CGFloat in                        // Handle dampening when user drags drawer out of bounds
-                    return dragAmount * pow(distancePast / 10 + 1, -3 / 2)
+                    return dragAmount * pow(abs(distancePast) / 10 + 1, -3 / 2)
                 }
                 
-                withAnimation(.easeInOut(duration: 0.05)) {
-                    calculateY(heightDelta: update.translation.height - currentDrawerDrag.height, dampening: dampening)
-                    controller.xPos += controller.isShortCard && abs(update.translation.width) >= minDragDistance ? update.translation.width - currentDrawerDrag.width : 0
-                }
+                calculateY(heightDelta: update.translation.height - currentDrawerDrag.height, dampening: dampening)
+                calculateX(dragValue: update, dampening: dampening)
                 currentDrawerDrag = update.translation
             }
             .onEnded { update in
@@ -99,6 +116,7 @@ public struct BottomDrawer: View {
                                             .padding(.bottom, 5)
                                         Text("Is short: \(controller.isShortCard ? "Yes." : "No.") \(geo.size.width)pt")
                                         Text("Height: \(controller.height)")
+                                        Text("XPos: \(controller.xPos)")
                                     }
                                     .background(
                                         GeometryReader { viewGeo in
