@@ -38,6 +38,7 @@ final class BottomDrawerVM: ObservableObject {
     
     internal func calculateAvailableHeights(screenSize: CGSize) {
         if verticalDetents.isEmpty { return }
+        availableHeights = []
         for detent in verticalDetents {
             switch detent {
             case .large:
