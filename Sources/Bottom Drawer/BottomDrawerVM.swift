@@ -66,10 +66,7 @@ final class BottomDrawerVM: ObservableObject {
     }
     
     internal func calculateAvailableWidths(screenSize: CGSize) {
-        if !isShortCard {
-            availableWidths = [0]
-            return
-        }
+        if !isShortCard { return }
         
         for detent in horizontalDetents {
             switch detent {
