@@ -116,7 +116,7 @@ final class BottomDrawerVM: ObservableObject {
         return distanceToPoint - offset
     }
     
-    internal func snapToPoint(velocity: CGSize) {
+    internal func snapToPoint(velocity: CGSize = .zero) {
         var animation: (CGFloat) -> Animation { { velocity in
             return .bouncy(duration: abs(1000 / velocity).clamped(to: 0.2...0.5))
         }}
