@@ -100,7 +100,6 @@ public struct BottomDrawer: View {
                     Spacer(minLength: geo.size.height - controller.height + geo.safeAreaInsets.top + geo.safeAreaInsets.bottom)
                     RoundedRectangle(cornerRadius: cornerRadius)
                         .foregroundStyle(.regularMaterial)
-                        .shadow(radius: 2)
                         .frame(
                             width: controller.isShortCard ? controller.shortCardSize : geo.size.width,
                             height: controller.height
@@ -130,6 +129,7 @@ public struct BottomDrawer: View {
                                 }
                             })
                         .clipped()
+                        .shadow(color: .black.opacity(0.1), radius: 2)
                         .gesture(drawerDrag)
                         .onChange(of: geo.size) { size in
                             let sizeCalculation: CGSize = CGSize(width: size.width, height: size.height + geo.safeAreaInsets.bottom)
