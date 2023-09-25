@@ -122,12 +122,12 @@ final class BottomDrawerVM: ObservableObject {
         }}
         
         if availableHeights.count > 0 {
-            withAnimation(animation(velocity.height)) {
+            withAnimation(velocity == .zero ? .linear : animation(velocity.height)) {
                 height += calculateSnap(snapPoints: availableHeights, currentPosition: height, offset: velocity.height / 6)
             }
         }
         if availableWidths.count > 0 {
-            withAnimation(animation(velocity.width)) {
+            withAnimation(velocity == .zero ? .linear : animation(velocity.width)) {
                 xPos += calculateSnap(snapPoints: availableWidths, currentPosition: xPos, offset: -velocity.width / 10)
             }
         }
