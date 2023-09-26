@@ -97,7 +97,7 @@ public struct BottomDrawer: View {
             }
             GeometryReader { geo in
                 VStack {
-                    Spacer(minLength: geo.size.height - controller.height + geo.safeAreaInsets.top + geo.safeAreaInsets.bottom)
+                    Spacer(minLength: geo.size.height - controller.height + geo.safeAreaInsets.top)
                     RoundedRectangle(cornerRadius: cornerRadius)
                         .foregroundStyle(.regularMaterial)
                         .frame(
@@ -132,7 +132,10 @@ public struct BottomDrawer: View {
                         .shadow(color: .black.opacity(0.1), radius: 2)
                         .gesture(drawerDrag)
                         .onChange(of: geo.size) { size in
-                            let sizeCalculation: CGSize = CGSize(width: size.width, height: size.height + geo.safeAreaInsets.bottom)
+                            let sizeCalculation: CGSize = CGSize(
+                                width: size.width,
+                                height: size.height + (controller.isShortCard ? -geo.safeAreaInsets.bottom * 2 : geo.safeAreaInsets.bottom)
+                            )
                             controller.calculateIsShortCard(size: size)
                             controller.calculateAvailableHeights(screenSize: sizeCalculation)
                             controller.calculateAvailableWidths(screenSize: sizeCalculation)
@@ -146,9 +149,6 @@ public struct BottomDrawer: View {
                             controller.snapToPoint()
                         }
                 }
-                .padding(.leading, geo.safeAreaInsets.leading)
-                .padding(.trailing, geo.safeAreaInsets.trailing)
-                .ignoresSafeArea()
             }
         }
         .offset(x: controller.isShortCard ? controller.xPos : 0)
