@@ -149,10 +149,6 @@ public struct BottomDrawer: View {
                             controller.snapToPoint()
                         }
                 }
-                if controller.isShortCard {
-                    Color.clear
-                        .frame(height: geo.safeAreaInsets.bottom)
-                }
             }
         }
         .offset(x: controller.isShortCard ? controller.xPos : 0)
