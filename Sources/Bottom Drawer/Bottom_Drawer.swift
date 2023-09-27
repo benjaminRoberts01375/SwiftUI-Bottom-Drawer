@@ -136,7 +136,6 @@ public struct BottomDrawer: View {
                                 width: geo.size.width,
                                 height: geo.size.height + (controller.isShortCard ? -insets.bottom : insets.bottom)
                             )
-                            print(insets.bottom)
                             controller.calculateIsShortCard(size: geo.size)
                             controller.calculateAvailableHeights(screenSize: sizeCalculation)
                             controller.calculateAvailableWidths(screenSize: sizeCalculation)
