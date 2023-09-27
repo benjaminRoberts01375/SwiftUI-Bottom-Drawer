@@ -97,7 +97,7 @@ public struct BottomDrawer: View {
             }
             GeometryReader { geo in
                 VStack {
-                    Spacer(minLength: controller.isShortCard ? geo.safeAreaInsets.bottom : 0)
+                    Spacer(minLength: controller.isShortCard ? (geo.safeAreaInsets.top > 0 ? geo.safeAreaInsets.top : geo.safeAreaInsets.bottom) : 0)
                     RoundedRectangle(cornerRadius: cornerRadius)
                         .foregroundStyle(.regularMaterial)
                         .frame(
