@@ -104,8 +104,7 @@ public struct BottomDrawer: View {
                             width: controller.isShortCard ? controller.shortCardSize : geo.size.width,
                             height: controller.height
                         )
-                        .overlay(
-                            content: {
+                        .overlay {
                                 VStack {
                                     VStack {
                                         Capsule()
@@ -127,7 +126,7 @@ public struct BottomDrawer: View {
                                     )
                                     Spacer()
                                 }
-                            })
+                            }
                         .clipped()
                         .shadow(color: .black.opacity(0.1), radius: 2)
                         .gesture(drawerDrag)
