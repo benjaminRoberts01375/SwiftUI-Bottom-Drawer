@@ -97,7 +97,7 @@ public struct BottomDrawer: View {
             }
             GeometryReader { geo in
                 VStack {
-                    Spacer(minLength: geo.size.height - controller.height + geo.safeAreaInsets.top)
+                    Spacer(minLength: controller.isShortCard ? geo.safeAreaInsets.bottom : 0)
                     RoundedRectangle(cornerRadius: cornerRadius)
                         .foregroundStyle(.regularMaterial)
                         .frame(
@@ -131,12 +131,13 @@ public struct BottomDrawer: View {
                         .clipped()
                         .shadow(color: .black.opacity(0.1), radius: 2)
                         .gesture(drawerDrag)
-                        .onChange(of: geo.size) { size in
+                        .onChange(of: geo.safeAreaInsets) { insets in
                             let sizeCalculation: CGSize = CGSize(
-                                width: size.width,
-                                height: size.height + (controller.isShortCard ? -geo.safeAreaInsets.bottom * 2 : geo.safeAreaInsets.bottom)
+                                width: geo.size.width,
+                                height: geo.size.height + (controller.isShortCard ? -insets.bottom : insets.bottom)
                             )
-                            controller.calculateIsShortCard(size: size)
+                            print(insets.bottom)
+                            controller.calculateIsShortCard(size: geo.size)
                             controller.calculateAvailableHeights(screenSize: sizeCalculation)
                             controller.calculateAvailableWidths(screenSize: sizeCalculation)
                             controller.snapToPoint()
@@ -149,9 +150,14 @@ public struct BottomDrawer: View {
                             controller.snapToPoint()
                         }
                 }
+                if controller.isShortCard {
+                    Color.clear
+                        .frame(height: geo.safeAreaInsets.bottom)
+                }
             }
         }
         .offset(x: controller.isShortCard ? controller.xPos : 0)
+        .ignoresSafeArea(edges: controller.isShortCard ? [] : .bottom)
     }
 }
 
