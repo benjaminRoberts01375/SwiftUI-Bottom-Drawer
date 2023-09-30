@@ -14,9 +14,9 @@ final class BottomDrawerVM: ObservableObject {
     private var minDetentDelta: CGFloat = 30
     
     @Published var height: CGFloat {
-        didSet {
-            if height <= 0 {
-                height = 50
+        didSet(oldHeight) {
+            if !height.isNormal || height <= 0 {
+                height = oldHeight
             }
         }
     }
