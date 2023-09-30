@@ -88,7 +88,7 @@ public struct BottomDrawer: View {
     }
     
     public var body: some View {
-        ZStack {
+        ZStack(alignment: .bottomTrailing) {
             if !controller.isShortCard {
                 Color.black
                     .opacity(transparency)
@@ -97,7 +97,6 @@ public struct BottomDrawer: View {
             }
             GeometryReader { geo in
                 VStack {
-                    Spacer(minLength: controller.isShortCard ? (geo.safeAreaInsets.top > 0 ? geo.safeAreaInsets.top : geo.safeAreaInsets.bottom) : 0)
                     RoundedRectangle(cornerRadius: cornerRadius)
                         .foregroundStyle(.regularMaterial)
                         .frame(
@@ -151,10 +150,13 @@ public struct BottomDrawer: View {
                             controller.snapToPoint()
                         }
                 }
+                .offset(
+                    x: controller.isShortCard ? controller.xPos : 0,
+                    y: geo.size.height - controller.height
+                )
             }
+            .ignoresSafeArea(edges: controller.isShortCard ? [] : .bottom)
         }
-        .offset(x: controller.isShortCard ? controller.xPos : 0)
-        .ignoresSafeArea(edges: controller.isShortCard ? [] : .bottom)
     }
 }
 
