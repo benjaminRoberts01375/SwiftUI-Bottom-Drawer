@@ -132,4 +132,16 @@ final class BottomDrawerVM: ObservableObject {
             }
         }
     }
+    
+    internal func recalculateAll(size: CGSize, safeAreas: EdgeInsets) {
+        let sizeCalculation: CGSize = CGSize(
+            width: size.width,
+            height: size.height + (isShortCard ? -safeAreas.bottom : safeAreas.bottom)
+        )
+        
+        calculateIsShortCard(size: size)
+        calculateAvailableHeights(screenSize: sizeCalculation)
+        calculateAvailableWidths(screenSize: sizeCalculation)
+        snapToPoint()
+    }
 }

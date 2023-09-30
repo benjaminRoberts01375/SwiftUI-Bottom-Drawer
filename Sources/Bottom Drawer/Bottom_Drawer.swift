@@ -124,26 +124,8 @@ public struct BottomDrawer: View {
                         }
                         .clipped()
                         .gesture(drawerDrag)
-                        .onChange(of: geo.safeAreaInsets) { insets in
-                            let sizeCalculation: CGSize = CGSize(
-                                width: geo.size.width,
-                                height: geo.size.height + (controller.isShortCard ? -insets.bottom : insets.bottom)
-                            )
-                            controller.calculateIsShortCard(size: geo.size)
-                            controller.calculateAvailableHeights(screenSize: sizeCalculation)
-                            controller.calculateAvailableWidths(screenSize: sizeCalculation)
-                            controller.snapToPoint()
-                        }
-                        .onAppear {
-                            let sizeCalculation: CGSize = CGSize(
-                                width: geo.size.width,
-                                height: geo.size.height + (controller.isShortCard ? -geo.safeAreaInsets.bottom : geo.safeAreaInsets.bottom)
-                            )
-                            controller.calculateIsShortCard(size: geo.size)
-                            controller.calculateAvailableHeights(screenSize: sizeCalculation)
-                            controller.calculateAvailableWidths(screenSize: sizeCalculation)
-                            controller.snapToPoint()
-                        }
+                        .onChange(of: geo.safeAreaInsets) { controller.recalculateAll(size: geo.size, safeAreas: $0) }
+                        .onAppear { controller.recalculateAll(size: geo.size, safeAreas: geo.safeAreaInsets) }
                 }
                 .offset(
                     x: controller.isShortCard ? controller.xPos : 0,
