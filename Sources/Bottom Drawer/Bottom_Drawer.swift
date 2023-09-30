@@ -123,7 +123,6 @@ public struct BottomDrawer: View {
                             .scrollDisabled(true)
                         }
                         .clipped()
-                        .shadow(color: .black.opacity(0.1), radius: 2)
                         .gesture(drawerDrag)
                         .onChange(of: geo.safeAreaInsets) { insets in
                             let sizeCalculation: CGSize = CGSize(
