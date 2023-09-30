@@ -14,13 +14,11 @@ public struct BottomDrawer: View {
     @State var currentDrawerDrag: CGSize = .zero
     
     var transparency: CGFloat {
-        get {
-            if controller.availableHeights.isEmpty { return 0 }
-            let maxHeight = controller.availableHeights[controller.availableHeights.count - 1]
-            let fadeAtPercent = 0.75
-            let maxFade = 0.5
-            return ((controller.height - maxHeight * fadeAtPercent) / (maxHeight * (1 - fadeAtPercent)) * maxFade).clamped(to: 0...maxFade)
-        }
+        if controller.availableHeights.isEmpty { return 0 }
+        let maxHeight = controller.availableHeights[controller.availableHeights.count - 1]
+        let fadeAtPercent = 0.75
+        let maxFade = 0.5
+        return ((controller.height - maxHeight * fadeAtPercent) / (maxHeight * (1 - fadeAtPercent)) * maxFade).clamped(to: 0...maxFade)
     }
     
     var drawerDrag: some Gesture {
