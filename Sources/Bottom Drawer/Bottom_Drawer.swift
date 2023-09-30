@@ -147,10 +147,9 @@ public struct BottomDrawer: View {
                 }
                 .offset(
                     x: controller.isShortCard ? controller.xPos : 0,
-                    y: geo.size.height - controller.height
+                    y: geo.size.height - controller.height + (controller.isShortCard ? 0 : geo.safeAreaInsets.bottom)
                 )
             }
-            .ignoresSafeArea(edges: controller.isShortCard ? [] : .bottom)
         }
     }
 }
