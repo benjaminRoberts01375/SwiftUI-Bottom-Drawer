@@ -65,11 +65,21 @@ public struct BottomDrawer: View {
                         )
                         .overlay {
                             VStack {
-                                Capsule()
-                                    .foregroundStyle(.gray)
-                                    .frame(width: 50, height: 5)
-                                    .padding(.top, 15)
-                                    .padding(.bottom, 5)
+                                Button {
+                                    guard let maxSnapPoint = controller.availableHeights.max(),
+                                          let minSnapPoint = controller.availableHeights.min()
+                                    else { return }
+                                    withAnimation(.bouncy(duration: 0.5)) {
+                                        controller.height = controller.height == maxSnapPoint ? minSnapPoint : maxSnapPoint
+                                    }
+                                } label: {
+                                    Capsule()
+                                        .foregroundStyle(.gray)
+                                        .frame(width: 50, height: 5)
+                                        .padding(.top, 15)
+                                        .padding(.bottom, 5)
+                                        .gesture(drawerDrag)
+                                }
                                 ScrollView {
                                     VStack {
                                         Text("Is short: \(controller.isShortCard ? "Yes." : "No.") \(geo.size.width)pt")
