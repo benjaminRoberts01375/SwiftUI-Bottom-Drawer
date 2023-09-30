@@ -105,7 +105,7 @@ public struct BottomDrawer: View {
                             height: controller.height
                         )
                         .overlay {
-                                VStack {
+                                ScrollView {
                                     VStack {
                                         Capsule()
                                             .foregroundStyle(.gray)
@@ -124,8 +124,8 @@ public struct BottomDrawer: View {
                                                 }
                                         }
                                     )
-                                    Spacer()
                                 }
+                                .scrollDisabled(controller.height < controller.availableHeights.last ?? 0 || controller.height < controller.viewHeight)
                             }
                         .clipped()
                         .shadow(color: .black.opacity(0.1), radius: 2)
