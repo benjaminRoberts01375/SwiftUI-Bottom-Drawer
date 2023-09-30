@@ -66,27 +66,29 @@ public struct BottomDrawer: View {
                             height: controller.height
                         )
                         .overlay {
-                            ScrollView {
-                                VStack {
-                                    Capsule()
-                                        .foregroundStyle(.gray)
-                                        .frame(width: 50, height: 5)
-                                        .padding(.top, 15)
-                                        .padding(.bottom, 5)
-                                    Text("Is short: \(controller.isShortCard ? "Yes." : "No.") \(geo.size.width)pt")
-                                    Text("Height: \(controller.height)")
-                                    Text("XPos: \(controller.xPos)")
-                                }
-                                .background(
-                                    GeometryReader { viewGeo in
-                                        Color.clear
-                                            .onAppear {
-                                                controller.viewHeight = viewGeo.size.height
-                                            }
+                            VStack {
+                                Capsule()
+                                    .foregroundStyle(.gray)
+                                    .frame(width: 50, height: 5)
+                                    .padding(.top, 15)
+                                    .padding(.bottom, 5)
+                                ScrollView {
+                                    VStack {
+                                        Text("Is short: \(controller.isShortCard ? "Yes." : "No.") \(geo.size.width)pt")
+                                        Text("Height: \(controller.height)")
+                                        Text("XPos: \(controller.xPos)")
                                     }
-                                )
+                                    .background(
+                                        GeometryReader { viewGeo in
+                                            Color.clear
+                                                .onAppear {
+                                                    controller.viewHeight = viewGeo.size.height
+                                                }
+                                        }
+                                    )
+                                }
+                                .scrollDisabled(true)
                             }
-                            .scrollDisabled(true)
                         }
                         .clipped()
                         .gesture(drawerDrag)
