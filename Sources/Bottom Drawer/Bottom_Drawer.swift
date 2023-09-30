@@ -104,28 +104,28 @@ public struct BottomDrawer: View {
                             height: controller.height
                         )
                         .overlay {
-                                ScrollView {
-                                    VStack {
-                                        Capsule()
-                                            .foregroundStyle(.gray)
-                                            .frame(width: 50, height: 5)
-                                            .padding(.top, 15)
-                                            .padding(.bottom, 5)
-                                        Text("Is short: \(controller.isShortCard ? "Yes." : "No.") \(geo.size.width)pt")
-                                        Text("Height: \(controller.height)")
-                                        Text("XPos: \(controller.xPos)")
-                                    }
-                                    .background(
-                                        GeometryReader { viewGeo in
-                                            Color.clear
-                                                .onAppear {
-                                                    controller.viewHeight = viewGeo.size.height
-                                                }
-                                        }
-                                    )
+                            ScrollView {
+                                VStack {
+                                    Capsule()
+                                        .foregroundStyle(.gray)
+                                        .frame(width: 50, height: 5)
+                                        .padding(.top, 15)
+                                        .padding(.bottom, 5)
+                                    Text("Is short: \(controller.isShortCard ? "Yes." : "No.") \(geo.size.width)pt")
+                                    Text("Height: \(controller.height)")
+                                    Text("XPos: \(controller.xPos)")
                                 }
-                                .scrollDisabled(controller.height < controller.availableHeights.last ?? 0 || controller.height < controller.viewHeight)
+                                .background(
+                                    GeometryReader { viewGeo in
+                                        Color.clear
+                                            .onAppear {
+                                                controller.viewHeight = viewGeo.size.height
+                                            }
+                                    }
+                                )
                             }
+                            .scrollDisabled(true)
+                        }
                         .clipped()
                         .shadow(color: .black.opacity(0.1), radius: 2)
                         .gesture(drawerDrag)
