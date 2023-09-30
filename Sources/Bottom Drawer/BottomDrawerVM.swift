@@ -27,6 +27,7 @@ final class BottomDrawerVM: ObservableObject {
     @Published internal var isShortCard: Bool = false
     
     internal var viewHeight: CGFloat = 0
+    private let minDragDistance: CGFloat = 40
     
     init(verticalDetents: Set<VerticalDetents>, horizontalDetents: Set<HorizontalDetents>) {
         self.verticalDetents = verticalDetents
@@ -36,7 +37,7 @@ final class BottomDrawerVM: ObservableObject {
         self.height = 200
     }
     
-    internal func calculateAvailableHeights(screenSize: CGSize) {
+    private func calculateAvailableHeights(screenSize: CGSize) {
         if verticalDetents.isEmpty { return }
         availableHeights = []
         for detent in verticalDetents {
@@ -65,7 +66,7 @@ final class BottomDrawerVM: ObservableObject {
         filterDimensions(availables: &availableHeights)
     }
     
-    internal func calculateAvailableWidths(screenSize: CGSize) {
+    private func calculateAvailableWidths(screenSize: CGSize) {
         if !isShortCard { return }
         
         for detent in horizontalDetents {
@@ -106,7 +107,7 @@ final class BottomDrawerVM: ObservableObject {
         }
     }
     
-    internal func calculateIsShortCard(size: CGSize) {
+    private func calculateIsShortCard(size: CGSize) {
         isShortCard = size.width >= shortCardSize + requiredFreeWidth
         snapToPoint(velocity: .zero)
     }
@@ -143,5 +144,37 @@ final class BottomDrawerVM: ObservableObject {
         calculateAvailableHeights(screenSize: sizeCalculation)
         calculateAvailableWidths(screenSize: sizeCalculation)
         snapToPoint()
+    }
+
+    func calculateY(heightDelta: CGFloat, dampening: (CGFloat) -> CGFloat) {
+        guard let maxSnapPoint = availableHeights.max(),
+              let minSnapPoint = availableHeights.min()
+        else { return }
+        
+        if height > maxSnapPoint { // Above max height
+            let distanceAbove = height - maxSnapPoint
+            height += heightDelta * (1 / dampening(maxSnapPoint - height + 1))
+        }
+        else if height < minSnapPoint { // Below max height
+            let distanceBelow = minSnapPoint - height
+            height -= heightDelta * (1 / dampening(minSnapPoint - height + 1))
+        }
+        else { // Normal scrolling
+            height -= heightDelta
+        }
+    }
+    
+    func calculateX(dragValue: DragGesture.Value, currentDrawerDrag: CGSize, dampening: (CGFloat) -> CGFloat) {
+        if !isShortCard { return }
+        let dragAmount = dragValue.location.x + shortCardSize / 2
+        guard let nearestSnapPointToGesture = availableWidths.min(by: { abs($0 - dragValue.location.x + shortCardSize / 2) < abs($1 - dragValue.location.x + shortCardSize / 2) })
+        else { return }
+        
+        if abs(dragValue.translation.width) < minDragDistance { return } // Min horizontal drag
+        let xFrameDelta = dragValue.translation.width - currentDrawerDrag.width
+        
+        withAnimation(.easeInOut(duration: 0.5)) {
+            xPos = nearestSnapPointToGesture - dampening(nearestSnapPointToGesture + shortCardSize / 2 - dragValue.location.x)
+        }
     }
 }

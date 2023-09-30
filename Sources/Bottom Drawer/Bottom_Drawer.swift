@@ -12,7 +12,6 @@ public struct BottomDrawer: View {
     private let shadowRadius: CGFloat = 5
     @StateObject private var controller: BottomDrawerVM
     @State var currentDrawerDrag: CGSize = .zero
-    private let minDragDistance: CGFloat = 40
     
     var transparency: CGFloat {
         get {
@@ -24,38 +23,6 @@ public struct BottomDrawer: View {
         }
     }
     
-    private func calculateY(heightDelta: CGFloat, dampening: (CGFloat) -> CGFloat) {
-        guard let maxSnapPoint = controller.availableHeights.max(),
-              let minSnapPoint = controller.availableHeights.min()
-        else { return }
-        
-        if controller.height > maxSnapPoint { // Above max height
-            let distanceAbove = controller.height - maxSnapPoint
-            controller.height += heightDelta * (1 / dampening(maxSnapPoint - controller.height + 1))
-        }
-        else if controller.height < minSnapPoint { // Below max height
-            let distanceBelow = minSnapPoint - controller.height
-            controller.height -= heightDelta * (1 / dampening(minSnapPoint - controller.height + 1))
-        }
-        else { // Normal scrolling
-            controller.height -= heightDelta
-        }
-    }
-    
-    private func calculateX(dragValue: DragGesture.Value, dampening: (CGFloat) -> CGFloat) {
-        if !controller.isShortCard { return }
-        let dragAmount = dragValue.location.x + controller.shortCardSize / 2
-        guard let nearestSnapPointToGesture = controller.availableWidths.min(by: { abs($0 - dragValue.location.x + controller.shortCardSize / 2) < abs($1 - dragValue.location.x + controller.shortCardSize / 2) })
-        else { return }
-        
-        if abs(dragValue.translation.width) < minDragDistance { return } // Min horizontal drag
-        let xFrameDelta = dragValue.translation.width - currentDrawerDrag.width
-        
-        withAnimation(.easeInOut(duration: 0.5)) {
-            controller.xPos = nearestSnapPointToGesture - dampening(nearestSnapPointToGesture + controller.shortCardSize / 2 - dragValue.location.x)
-        }
-    }
-    
     var drawerDrag: some Gesture {
         DragGesture(coordinateSpace: .global)
             .onChanged { update in
@@ -63,9 +30,8 @@ public struct BottomDrawer: View {
                     let distance = pow(abs(distancePast), 1 / 1.5)
                     return distancePast < 0 ? -distance : distance
                 }
-                
-                calculateY(heightDelta: update.translation.height - currentDrawerDrag.height, dampening: dampening)
-                calculateX(dragValue: update, dampening: dampening)
+                controller.calculateY(heightDelta: update.translation.height - currentDrawerDrag.height, dampening: dampening)
+                controller.calculateX(dragValue: update, currentDrawerDrag: currentDrawerDrag, dampening: dampening)
                 currentDrawerDrag = update.translation
             }
             .onEnded { update in
