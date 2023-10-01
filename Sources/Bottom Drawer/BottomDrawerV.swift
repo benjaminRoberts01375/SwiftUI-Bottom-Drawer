@@ -12,6 +12,7 @@ public struct BottomDrawer: View {
     @StateObject private var controller: BottomDrawerVM
     @State private var currentDrawerDrag: CGSize = .zero
     @State private var allowDragging = false
+    let scrollNameSpace = "scroll"
     
     private var transparency: CGFloat {
         if controller.availableHeights.isEmpty { return 0 }
@@ -102,11 +103,11 @@ public struct BottomDrawer: View {
                                         GeometryReader { contentGeo in
                                             Color.clear
                                                 .onAppear { controller.contentHeight = contentGeo.size.height }
-                                                .preference(key: ScrollOffsetPreferenceKey.self, value: contentGeo.frame(in: .named("scroll")).origin)
+                                                .preference(key: ScrollOffsetPreferenceKey.self, value: contentGeo.frame(in: .named(scrollNameSpace)).origin)
                                         }
                                     )
                                 }
-                                .coordinateSpace(name: "scroll")
+                                .coordinateSpace(name: scrollNameSpace)
                                 .scenePadding([.bottom])
                                 .scrollDisabled(!controller.scrollable)
                             }
