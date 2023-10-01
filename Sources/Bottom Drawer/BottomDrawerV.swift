@@ -101,13 +101,12 @@ public struct BottomDrawer: View {
                                     .background(
                                         GeometryReader { contentGeo in
                                             Color.clear
-                                                .onAppear {
-                                                    controller.contentHeight = contentGeo.size.height
-                                                }
+                                                .onAppear { controller.contentHeight = contentGeo.size.height }
                                                 .preference(key: ScrollOffsetPreferenceKey.self, value: contentGeo.frame(in: .named("scroll")).origin)
                                         }
                                     )
                                 }
+                                .coordinateSpace(name: "scroll")
                                 .scenePadding([.bottom])
                                 .scrollDisabled(!controller.scrollable)
                             }
@@ -116,8 +115,8 @@ public struct BottomDrawer: View {
                         .gesture(drawerDrag)
                         .onChange(of: geo.safeAreaInsets) { controller.recalculateAll(size: geo.size, safeAreas: $0) }
                         .onAppear { controller.recalculateAll(size: geo.size, safeAreas: geo.safeAreaInsets) }
-                        .onPreferenceChange(ScrollOffsetPreferenceKey.self) { _ in
-                            allowDragging = false
+                        .onPreferenceChange(ScrollOffsetPreferenceKey.self) { val in
+                            if allowDragging { allowDragging = false }
                         }
                 }
                 .offset(
