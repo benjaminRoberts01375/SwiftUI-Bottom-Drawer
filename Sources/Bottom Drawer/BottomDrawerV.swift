@@ -93,6 +93,9 @@ public struct BottomDrawer: View {
                                         Text("Is short: \(controller.isShortCard ? "Yes." : "No.") \(geo.size.width)pt")
                                         Text("Height: \(controller.height)")
                                         Text("XPos: \(controller.xPos)")
+                                        Text("Scrollable: \(controller.scrollable ? "true" : "false")")
+                                        Color.yellow
+                                            .frame(width: 100, height: 800)
                                     }
                                     .frame(width: geo.size.width)
                                     .background(
