@@ -99,12 +99,12 @@ public struct BottomDrawer: View {
                                     }
                                     .frame(width: geo.size.width)
                                     .background(
-                                        GeometryReader { viewGeo in
+                                        GeometryReader { contentGeo in
                                             Color.clear
                                                 .onAppear {
-                                                    controller.viewHeight = viewGeo.size.height
+                                                    controller.contentHeight = contentGeo.size.height
                                                 }
-                                                .preference(key: ScrollOffsetPreferenceKey.self, value: viewGeo.frame(in: .named("scroll")).origin)
+                                                .preference(key: ScrollOffsetPreferenceKey.self, value: contentGeo.frame(in: .named("scroll")).origin)
                                         }
                                     )
                                 }

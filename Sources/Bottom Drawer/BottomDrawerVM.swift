@@ -26,7 +26,7 @@ final class BottomDrawerVM: ObservableObject {
     private let requiredFreeWidth: CGFloat = 350
     @Published internal var isShortCard: Bool = false
     
-    internal var viewHeight: CGFloat = 0
+    internal var contentHeight: CGFloat = 0
     @Published internal var scrollable: Bool = false
     private let minDragDistance: CGFloat = 40
     
@@ -57,7 +57,7 @@ final class BottomDrawerVM: ObservableObject {
                 if height <= 0 { continue }
                 availableHeights.append(height)
             case .view:
-                availableHeights.append(viewHeight)
+                availableHeights.append(contentHeight)
             }
         }
         
@@ -183,7 +183,7 @@ final class BottomDrawerVM: ObservableObject {
     }
     
     func calculateScrollable() {
-        if height >= viewHeight {
+        if height >= contentHeight {
             scrollable = false
             return
         }
