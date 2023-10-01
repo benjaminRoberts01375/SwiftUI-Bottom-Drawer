@@ -9,7 +9,6 @@ import SwiftUI
 @available(iOS 16.0, macOS 13.0, *)
 public struct BottomDrawer: View {
     private let cornerRadius: CGFloat = 20
-    private let shadowRadius: CGFloat = 5
     @StateObject private var controller: BottomDrawerVM
     @State var currentDrawerDrag: CGSize = .zero
     
