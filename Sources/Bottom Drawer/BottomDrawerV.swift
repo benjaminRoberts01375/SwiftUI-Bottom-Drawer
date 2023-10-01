@@ -33,6 +33,7 @@ public struct BottomDrawer: View {
             }
             .onEnded { update in
                 controller.snapToPoint(velocity: update.velocity)
+                controller.calculateScrollable()
                 currentDrawerDrag = .zero
             }
     }
@@ -71,6 +72,7 @@ public struct BottomDrawer: View {
                                     withAnimation(.bouncy(duration: 0.5)) {
                                         controller.height = controller.height == maxSnapPoint ? minSnapPoint : maxSnapPoint
                                     }
+                                    controller.calculateScrollable()
                                 } label: {
                                     Capsule()
                                         .foregroundStyle(.gray)
@@ -94,7 +96,8 @@ public struct BottomDrawer: View {
                                         }
                                     )
                                 }
-                                .scrollDisabled(true)
+                                .scenePadding([.bottom])
+                                .scrollDisabled(!controller.scrollable)
                             }
                         }
                         .clipped()

@@ -27,6 +27,7 @@ final class BottomDrawerVM: ObservableObject {
     @Published internal var isShortCard: Bool = false
     
     internal var viewHeight: CGFloat = 0
+    @Published internal var scrollable: Bool = false
     private let minDragDistance: CGFloat = 40
     
     init(verticalDetents: Set<VerticalDetents>, horizontalDetents: Set<HorizontalDetents>) {
@@ -144,6 +145,7 @@ final class BottomDrawerVM: ObservableObject {
         calculateAvailableHeights(screenSize: sizeCalculation)
         calculateAvailableWidths(screenSize: sizeCalculation)
         snapToPoint()
+        calculateScrollable()
     }
 
     func calculateY(heightDelta: CGFloat, dampening: (CGFloat) -> CGFloat) {
@@ -176,5 +178,17 @@ final class BottomDrawerVM: ObservableObject {
         withAnimation(.easeInOut(duration: 0.5)) {
             xPos = nearestSnapPointToGesture - dampening(nearestSnapPointToGesture + shortCardSize / 2 - dragValue.location.x)
         }
+    }
+    
+    func calculateScrollable() {
+        if height >= viewHeight {
+            scrollable = false
+            return
+        }
+        if height == availableHeights.last {
+            scrollable = true
+            return
+        }
+        scrollable = false
     }
 }
