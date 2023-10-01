@@ -11,7 +11,7 @@ public struct BottomDrawer: View {
     private let cornerRadius: CGFloat = 20
     @StateObject private var controller: BottomDrawerVM
     @State private var currentDrawerDrag: CGSize = .zero
-    @State private var allowScrolling = false
+    @State private var allowDragging = false
     
     private var transparency: CGFloat {
         if controller.availableHeights.isEmpty { return 0 }
@@ -24,8 +24,8 @@ public struct BottomDrawer: View {
     private var drawerDrag: some Gesture {
         DragGesture(coordinateSpace: .global)
             .onChanged { update in
-                if !allowScrolling {
-                    allowScrolling = true
+                if !allowDragging {
+                    allowDragging = true
                     return
                 }
                 
@@ -41,7 +41,7 @@ public struct BottomDrawer: View {
                 controller.snapToPoint(velocity: update.velocity)
                 controller.calculateScrollable()
                 currentDrawerDrag = .zero
-                allowScrolling = false
+                allowDragging = false
             }
     }
     
@@ -117,7 +117,7 @@ public struct BottomDrawer: View {
                         .onChange(of: geo.safeAreaInsets) { controller.recalculateAll(size: geo.size, safeAreas: $0) }
                         .onAppear { controller.recalculateAll(size: geo.size, safeAreas: geo.safeAreaInsets) }
                         .onPreferenceChange(ScrollOffsetPreferenceKey.self) { _ in
-                            allowScrolling = false
+                            allowDragging = false
                         }
                 }
                 .offset(
