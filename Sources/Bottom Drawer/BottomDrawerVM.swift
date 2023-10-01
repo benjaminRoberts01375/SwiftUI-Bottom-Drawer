@@ -11,7 +11,7 @@ final class BottomDrawerVM: ObservableObject {
     private let horizontalDetents: Set<HorizontalDetents>
     internal var availableHeights: [CGFloat]
     internal var availableWidths: [CGFloat]
-    private var minDetentDelta: CGFloat = 30
+    private let minDetentDelta: CGFloat = 30
     
     @Published var height: CGFloat {
         didSet(oldHeight) {
@@ -23,7 +23,7 @@ final class BottomDrawerVM: ObservableObject {
     @Published var xPos: CGFloat = 0
     
     internal let shortCardSize: CGFloat = 300
-    internal let requiredFreeWidth: CGFloat = 350
+    private let requiredFreeWidth: CGFloat = 350
     @Published internal var isShortCard: Bool = false
     
     internal var viewHeight: CGFloat = 0

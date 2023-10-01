@@ -10,10 +10,10 @@ import SwiftUI
 public struct BottomDrawer: View {
     private let cornerRadius: CGFloat = 20
     @StateObject private var controller: BottomDrawerVM
-    @State var currentDrawerDrag: CGSize = .zero
-    @State var allowScrolling = false
+    @State private var currentDrawerDrag: CGSize = .zero
+    @State private var allowScrolling = false
     
-    var transparency: CGFloat {
+    private var transparency: CGFloat {
         if controller.availableHeights.isEmpty { return 0 }
         let maxHeight = controller.availableHeights[controller.availableHeights.count - 1]
         let fadeAtPercent = 0.75
@@ -21,7 +21,7 @@ public struct BottomDrawer: View {
         return ((controller.height - maxHeight * fadeAtPercent) / (maxHeight * (1 - fadeAtPercent)) * maxFade).clamped(to: 0...maxFade)
     }
     
-    var drawerDrag: some Gesture {
+    private var drawerDrag: some Gesture {
         DragGesture(coordinateSpace: .global)
             .onChanged { update in
                 if !allowScrolling {
