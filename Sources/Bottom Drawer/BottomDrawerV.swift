@@ -11,6 +11,7 @@ public struct BottomDrawer: View {
     private let cornerRadius: CGFloat = 20
     @StateObject private var controller: BottomDrawerVM
     @State var currentDrawerDrag: CGSize = .zero
+    @State var allowScrolling = false
     
     var transparency: CGFloat {
         if controller.availableHeights.isEmpty { return 0 }
@@ -23,6 +24,11 @@ public struct BottomDrawer: View {
     var drawerDrag: some Gesture {
         DragGesture(coordinateSpace: .global)
             .onChanged { update in
+                if !allowScrolling {
+                    allowScrolling = true
+                    return
+                }
+                
                 let dampening = { (distancePast: CGFloat) -> CGFloat in
                     let distance = pow(abs(distancePast), 1 / 1.5)
                     return distancePast < 0 ? -distance : distance
@@ -35,6 +41,7 @@ public struct BottomDrawer: View {
                 controller.snapToPoint(velocity: update.velocity)
                 controller.calculateScrollable()
                 currentDrawerDrag = .zero
+                allowScrolling = false
             }
     }
     
@@ -87,6 +94,7 @@ public struct BottomDrawer: View {
                                         Text("Height: \(controller.height)")
                                         Text("XPos: \(controller.xPos)")
                                     }
+                                    .frame(width: geo.size.width)
                                     .background(
                                         GeometryReader { viewGeo in
                                             Color.clear

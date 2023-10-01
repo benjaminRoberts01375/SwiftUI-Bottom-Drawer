@@ -162,7 +162,9 @@ final class BottomDrawerVM: ObservableObject {
             height -= heightDelta * (1 / dampening(minSnapPoint - height + 1))
         }
         else { // Normal scrolling
-            height -= heightDelta
+            withAnimation(.easeInOut(duration: 0.1)) { // Handle any skips in frames
+                height -= heightDelta
+            }
         }
     }
     
