@@ -104,6 +104,7 @@ public struct BottomDrawer: View {
                                                 .onAppear {
                                                     controller.viewHeight = viewGeo.size.height
                                                 }
+                                                .preference(key: ScrollOffsetPreferenceKey.self, value: viewGeo.frame(in: .named("scroll")).origin)
                                         }
                                     )
                                 }
@@ -115,6 +116,9 @@ public struct BottomDrawer: View {
                         .gesture(drawerDrag)
                         .onChange(of: geo.safeAreaInsets) { controller.recalculateAll(size: geo.size, safeAreas: $0) }
                         .onAppear { controller.recalculateAll(size: geo.size, safeAreas: geo.safeAreaInsets) }
+                        .onPreferenceChange(ScrollOffsetPreferenceKey.self) { _ in
+                            allowScrolling = false
+                        }
                 }
                 .offset(
                     x: controller.isShortCard ? controller.xPos : 0,
@@ -122,6 +126,13 @@ public struct BottomDrawer: View {
                 )
             }
         }
+    }
+}
+
+struct ScrollOffsetPreferenceKey: PreferenceKey {
+    static var defaultValue: CGPoint = .zero
+    
+    static func reduce(value: inout CGPoint, nextValue: () -> CGPoint) {
     }
 }
 
