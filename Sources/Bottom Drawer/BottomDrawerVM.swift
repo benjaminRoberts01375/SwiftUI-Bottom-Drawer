@@ -136,12 +136,12 @@ final class BottomDrawerVM: ObservableObject {
     }
     
     internal func recalculateAll(size: CGSize, safeAreas: EdgeInsets) {
+        calculateIsShortCard(size: size)
         let sizeCalculation: CGSize = CGSize(
             width: size.width,
-            height: size.height + (isShortCard ? -safeAreas.bottom : safeAreas.bottom)
+            height: size.height + (isShortCard ? abs(safeAreas.top - safeAreas.bottom) : safeAreas.bottom)
         )
-        
-        calculateIsShortCard(size: size)
+        print("Is short: \(isShortCard ? "true" : "false" )")
         calculateAvailableHeights(screenSize: sizeCalculation)
         calculateAvailableWidths(screenSize: sizeCalculation)
         snapToPoint()
