@@ -139,7 +139,7 @@ final class BottomDrawerVM: ObservableObject {
         calculateIsShortCard(size: size)
         let sizeCalculation: CGSize = CGSize(
             width: size.width,
-            height: size.height + (isShortCard ? abs(safeAreas.top - safeAreas.bottom) : safeAreas.bottom)
+            height: size.height + (isShortCard ? -abs(safeAreas.top - safeAreas.bottom) : safeAreas.bottom)
         )
         print("Is short: \(isShortCard ? "true" : "false" )")
         calculateAvailableHeights(screenSize: sizeCalculation)
