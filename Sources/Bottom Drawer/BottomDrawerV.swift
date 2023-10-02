@@ -65,61 +65,54 @@ public struct BottomDrawer: View {
             }
             GeometryReader { geo in
                 VStack {
-                    RoundedRectangle(cornerRadius: cornerRadius)
-                        .foregroundStyle(.regularMaterial)
-                        .frame(
-                            width: controller.isShortCard ? controller.shortCardSize : geo.size.width,
-                            height: controller.height
-                        )
-                        .overlay {
-                            VStack {
-                                Button {
-                                    guard let maxSnapPoint = controller.availableHeights.max(),
-                                          let minSnapPoint = controller.availableHeights.min()
-                                    else { return }
-                                    withAnimation(.bouncy(duration: 0.5)) {
-                                        controller.height = controller.height == maxSnapPoint ? minSnapPoint : maxSnapPoint
-                                    }
-                                    controller.calculateScrollable()
-                                } label: {
-                                    Capsule()
-                                        .foregroundStyle(.gray)
-                                        .frame(width: 50, height: 5)
-                                        .padding(.top, 15)
-                                        .padding(.bottom, 5)
-                                        .gesture(drawerDrag)
-                                }
-                                ScrollView {
-                                    VStack {
-                                        Text("Is short: \(controller.isShortCard ? "Yes." : "No.") \(geo.size.width)pt")
-                                        Text("Height: \(controller.height)")
-                                        Text("XPos: \(controller.xPos)")
-                                        Text("Scrollable: \(controller.scrollable ? "true" : "false")")
-                                        Color.yellow
-                                            .frame(width: 100, height: 800)
-                                    }
-                                    .frame(width: geo.size.width)
-                                    .background(
-                                        GeometryReader { contentGeo in
-                                            Color.clear
-                                                .onAppear { controller.contentHeight = contentGeo.size.height }
-                                                .preference(key: ScrollOffsetPreferenceKey.self, value: contentGeo.frame(in: .named(scrollNameSpace)).origin)
-                                        }
-                                    )
-                                }
-                                .coordinateSpace(name: scrollNameSpace)
-                                .scenePadding([.bottom])
-                                .scrollDisabled(!controller.scrollable)
+                    Button {
+                        guard let maxSnapPoint = controller.availableHeights.max(),
+                              let minSnapPoint = controller.availableHeights.min()
+                        else { return }
+                        withAnimation(.bouncy(duration: 0.5)) {
+                            controller.height = controller.height == maxSnapPoint ? minSnapPoint : maxSnapPoint
+                        }
+                        controller.calculateScrollable()
+                    } label: {
+                        Capsule()
+                            .foregroundStyle(.gray)
+                            .frame(width: 50, height: 5)
+                            .gesture(drawerDrag)
+                            .padding(.top, 15)
+                            .padding(.bottom, 5)
+                    }
+
+                    ScrollView {
+                        VStack {
+                            Text("Is short: \(controller.isShortCard ? "Yes." : "No.") \(geo.size.width)pt")
+                            Text("Height: \(controller.height)")
+                            Text("XPos: \(controller.xPos)")
+                            Text("Scrollable: \(controller.scrollable ? "true" : "false")")
+                            Color.yellow
+                                .frame(width: 100, height: 800)
+                        }
+                        .frame(width: geo.size.width)
+                        .background(
+                            GeometryReader { contentGeo in
+                                Color.clear
+                                    .onAppear { controller.contentHeight = contentGeo.size.height }
+                                    .preference(key: ScrollOffsetPreferenceKey.self, value: contentGeo.frame(in: .named(scrollNameSpace)).origin)
                             }
-                        }
-                        .clipped()
-                        .gesture(drawerDrag)
-                        .onChange(of: geo.safeAreaInsets) { controller.recalculateAll(size: geo.size, safeAreas: $0) }
-                        .onAppear { controller.recalculateAll(size: geo.size, safeAreas: geo.safeAreaInsets) }
-                        .onPreferenceChange(ScrollOffsetPreferenceKey.self) { val in
-                            if allowDragging { allowDragging = false }
-                        }
+                        )
+                    }
+                    .coordinateSpace(name: scrollNameSpace)
+                    .scenePadding([.bottom])
+                    .scrollDisabled(!controller.scrollable)
                 }
+                .drawerLayer()
+                .frame(
+                    width: controller.isShortCard ? controller.shortCardSize : geo.size.width,
+                    height: controller.height
+                )
+                .gesture(drawerDrag)
+                .onChange(of: geo.safeAreaInsets) { controller.recalculateAll(size: geo.size, safeAreas: $0) }
+                .onAppear { controller.recalculateAll(size: geo.size, safeAreas: geo.safeAreaInsets) }
+                .onPreferenceChange(ScrollOffsetPreferenceKey.self) { _ in if allowDragging { allowDragging = false } }
                 .offset(
                     x: controller.isShortCard ? controller.xPos : 0,
                     y: geo.size.height - controller.height + (controller.isShortCard ? 0 : geo.safeAreaInsets.bottom)
@@ -132,8 +125,7 @@ public struct BottomDrawer: View {
 struct ScrollOffsetPreferenceKey: PreferenceKey {
     static var defaultValue: CGPoint = .zero
     
-    static func reduce(value: inout CGPoint, nextValue: () -> CGPoint) {
-    }
+    static func reduce(value: inout CGPoint, nextValue: () -> CGPoint) { }
 }
 
 @available(iOS 16.0, macOS 13.0, *)
