@@ -12,6 +12,7 @@ public struct BottomDrawer: View {
     @StateObject private var controller: BottomDrawerVM
     @State private var currentDrawerDrag: CGSize = .zero
     @State private var allowDragging = false
+    @State private var useChangeSize = true
     let scrollNameSpace = "scroll"
     
     private var transparency: CGFloat {
@@ -112,7 +113,13 @@ public struct BottomDrawer: View {
                     height: controller.height
                 )
                 .gesture(drawerDrag)
-                .onChange(of: geo.safeAreaInsets) { controller.recalculateAll(size: geo.size, safeAreas: $0) }
+                .onChange(of: geo.safeAreaInsets) {
+                    controller.recalculateAll(size: geo.size, safeAreas: $0)
+                    if useChangeSize { useChangeSize = false }
+                }
+                .onChange(of: geo.size) { size in
+                    if useChangeSize { controller.recalculateAll(size: size, safeAreas: geo.safeAreaInsets) }
+                }
                 .onAppear { controller.recalculateAll(size: geo.size, safeAreas: geo.safeAreaInsets) }
                 .onPreferenceChange(ScrollOffsetPreferenceKey.self) { _ in if allowDragging { allowDragging = false } }
                 .offset(
