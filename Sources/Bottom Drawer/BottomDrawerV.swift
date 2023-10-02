@@ -106,7 +106,7 @@ public struct BottomDrawer: View {
                 }
                 .drawerLayer()
                 .padding(.leading, controller.isShortCard && geo.safeAreaInsets.leading < geo.safeAreaInsets.bottom ? abs(geo.safeAreaInsets.leading - geo.safeAreaInsets.bottom) : 0)
-                .padding(.trailing, controller.isShortCard && geo.safeAreaInsets.trailing < geo.safeAreaInsets.trailing ? abs(geo.safeAreaInsets.trailing - geo.safeAreaInsets.bottom): 0)
+                .padding(.trailing, controller.isShortCard && geo.safeAreaInsets.trailing < geo.safeAreaInsets.bottom ? abs(geo.safeAreaInsets.trailing - geo.safeAreaInsets.bottom): 0)
                 .frame(
                     width: controller.isShortCard ? controller.shortCardSize : geo.size.width,
                     height: controller.height
