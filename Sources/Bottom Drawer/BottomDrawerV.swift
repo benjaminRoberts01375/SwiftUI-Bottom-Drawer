@@ -105,8 +105,8 @@ public struct BottomDrawer: View {
                     .scrollDisabled(!controller.scrollable)
                 }
                 .drawerLayer()
-                .padding(.leading, abs(geo.safeAreaInsets.leading - geo.safeAreaInsets.bottom))
-                .padding(.trailing, abs(geo.safeAreaInsets.trailing - geo.safeAreaInsets.bottom))
+                .padding(.leading, controller.isShortCard && geo.safeAreaInsets.leading < geo.safeAreaInsets.bottom ? abs(geo.safeAreaInsets.leading - geo.safeAreaInsets.bottom) : 0)
+                .padding(.trailing, controller.isShortCard && geo.safeAreaInsets.trailing < geo.safeAreaInsets.trailing ? abs(geo.safeAreaInsets.trailing - geo.safeAreaInsets.bottom): 0)
                 .frame(
                     width: controller.isShortCard ? controller.shortCardSize : geo.size.width,
                     height: controller.height
