@@ -11,7 +11,7 @@ public struct BottomDrawer: View {
     private let cornerRadius: CGFloat = 20
     @StateObject private var controller: BottomDrawerVM
     @State private var currentDrawerDrag: CGSize = .zero
-    @State private var allowDragging = false
+    @State private var oneFrameDragSkipped = false
     @State private var useChangeSize = true
     let scrollNameSpace = "scroll"
     
@@ -26,8 +26,8 @@ public struct BottomDrawer: View {
     private var drawerDrag: some Gesture {
         DragGesture(coordinateSpace: .global)
             .onChanged { update in
-                if !allowDragging {
-                    allowDragging = true
+                if !oneFrameDragSkipped {
+                    oneFrameDragSkipped = true
                     return
                 }
                 
@@ -43,7 +43,7 @@ public struct BottomDrawer: View {
                 controller.snapToPoint(velocity: update.velocity)
                 controller.calculateScrollable()
                 currentDrawerDrag = .zero
-                allowDragging = false
+                oneFrameDragSkipped = false
             }
     }
     
@@ -121,7 +121,7 @@ public struct BottomDrawer: View {
                     if useChangeSize { controller.recalculateAll(size: size, safeAreas: geo.safeAreaInsets) }
                 }
                 .onAppear { controller.recalculateAll(size: geo.size, safeAreas: geo.safeAreaInsets) }
-                .onPreferenceChange(ScrollOffsetPreferenceKey.self) { _ in if allowDragging { allowDragging = false } }
+                .onPreferenceChange(ScrollOffsetPreferenceKey.self) { _ in if oneFrameDragSkipped { oneFrameDragSkipped = false } }
                 .offset(
                     x: controller.isShortCard ? controller.xPos : 0,
                     y: geo.size.height - controller.height + (controller.isShortCard ? 0 : geo.safeAreaInsets.bottom)
@@ -134,7 +134,9 @@ public struct BottomDrawer: View {
 struct ScrollOffsetPreferenceKey: PreferenceKey {
     static var defaultValue: CGPoint = .zero
     
-    static func reduce(value: inout CGPoint, nextValue: () -> CGPoint) { }
+    static func reduce(value: inout CGPoint, nextValue: () -> CGPoint) { 
+        defaultValue = nextValue()
+    }
 }
 
 @available(iOS 16.0, macOS 13.0, *)
