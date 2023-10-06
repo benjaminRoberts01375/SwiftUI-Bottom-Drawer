@@ -33,6 +33,7 @@ final class BottomDrawerVM: ObservableObject {
     internal let shortDrawerSize: CGFloat = 300
     /// Min allowed space available on screen next to the short drawer.
     private let requiredFreeWidth: CGFloat = 350
+    /// Tracker for if the drawer should be rendered a limited width.
     @Published internal var isShortDrawer: Bool = false
     
     /// Tracker for the height of the content passed to the drawer.
