@@ -141,7 +141,6 @@ final class BottomDrawerVM: ObservableObject {
             width: size.width,
             height: size.height + (isShortCard ? -abs(safeAreas.top - safeAreas.bottom) : safeAreas.bottom)
         )
-        print("Is short: \(isShortCard ? "true" : "false" )")
         calculateAvailableHeights(screenSize: sizeCalculation)
         calculateAvailableWidths(screenSize: sizeCalculation)
         snapToPoint()
