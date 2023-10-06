@@ -7,12 +7,18 @@
 import SwiftUI
 
 final class BottomDrawerVM: ObservableObject {
+    /// Requested snap points for the height of the drawer.
     private let verticalDetents: Set<VerticalDetents>
+    /// Requested snap points for dragging the drawer horizontally.
     private let horizontalDetents: Set<HorizontalDetents>
+    /// Actual snap points for the height of the drawer.
     internal var availableHeights: [CGFloat]
+    /// Actual snap points for dragging the drawer horizontally.
     internal var availableWidths: [CGFloat]
+    /// Min allowed distance between snap points.
     private let minDetentDelta: CGFloat = 30
     
+    /// Height of the drawer.
     @Published var height: CGFloat {
         didSet(oldHeight) {
             if !height.isNormal || height <= 0 {
@@ -20,16 +26,25 @@ final class BottomDrawerVM: ObservableObject {
             }
         }
     }
+    /// x position of the drawer.
     @Published var xPos: CGFloat = 0
     
-    internal let shortCardSize: CGFloat = 300
+    /// Width for when the drawer is short.
+    internal let shortDrawerSize: CGFloat = 300
+    /// Min allowed space available on screen next to the short drawer.
     private let requiredFreeWidth: CGFloat = 350
-    @Published internal var isShortCard: Bool = false
+    @Published internal var isShortDrawer: Bool = false
     
+    /// Tracker for the height of the content passed to the drawer.
     internal var contentHeight: CGFloat = 0
     @Published internal var scrollable: Bool = false
+    /// Min x drag distance before distance is considered.
     private let minDragDistance: CGFloat = 40
     
+    /// Controller for the bottom drawer.
+    /// - Parameters:
+    ///   - verticalDetents: Requested snap points for the height of the drawer.
+    ///   - horizontalDetents: Requested snap points for dragging the drawer horizontally.
     init(verticalDetents: Set<VerticalDetents>, horizontalDetents: Set<HorizontalDetents>) {
         self.verticalDetents = verticalDetents
         self.horizontalDetents = horizontalDetents
@@ -38,6 +53,8 @@ final class BottomDrawerVM: ObservableObject {
         self.height = 200
     }
     
+    /// Determine the available heights of the bottom drawer based on the requested heights and screen size.
+    /// - Parameter screenSize: Size of the screen.
     private func calculateAvailableHeights(screenSize: CGSize) {
         if verticalDetents.isEmpty { return }
         availableHeights = []
@@ -67,17 +84,19 @@ final class BottomDrawerVM: ObservableObject {
         filterDimensions(availables: &availableHeights)
     }
     
+    /// /// Determine the available x positions of the bottom drawer based on the requested widths and screen size.
+    /// - Parameter screenSize: Size of the screen.
     private func calculateAvailableWidths(screenSize: CGSize) {
-        if !isShortCard { return }
+        if !isShortDrawer { return }
         availableWidths = []
         for detent in horizontalDetents {
             switch detent {
             case .left:
                 availableWidths.append(0)
             case .right:
-                availableWidths.append(screenSize.width - shortCardSize)
+                availableWidths.append(screenSize.width - shortDrawerSize)
             case .center:
-                availableWidths.append((screenSize.width - shortCardSize) / 2)
+                availableWidths.append((screenSize.width - shortDrawerSize) / 2)
             }
             
             availableWidths = availableWidths.sorted()
@@ -85,6 +104,8 @@ final class BottomDrawerVM: ObservableObject {
         }
     }
     
+    /// Filter snap points based on proximity,
+    /// - Parameter availables: Calculated snap points for x or y.
     private func filterDimensions(availables: inout [CGFloat]) {
         let first = availables.first ?? 0
         
@@ -108,46 +129,64 @@ final class BottomDrawerVM: ObservableObject {
         }
     }
     
-    private func calculateIsShortCard(size: CGSize) {
-        isShortCard = size.width >= shortCardSize + requiredFreeWidth
+    /// Determine if the drawer is supposed to be rendered short due to screen dimensions.
+    /// - Parameter size: Size of the screen
+    private func calculateIsShortDrawer(size: CGSize) {
+        isShortDrawer = size.width >= shortDrawerSize + requiredFreeWidth
         snapToPoint(velocity: .zero)
     }
     
+    /// Determine the distance to the nearst snap point for the drawer
+    /// - Parameters:
+    ///   - snapPoints: Snap points to calculate from
+    ///   - currentPosition: Current position of the bottom drawer
+    ///   - offset: Any offsetting due to external factors like velocity. This can be used for passing snap points when the user flicks quickly.
+    /// - Returns: Distance to the nearest snap point.
     private func calculateSnap(snapPoints: [CGFloat], currentPosition: CGFloat, offset: CGFloat = 0) -> CGFloat {
         let distanceToPoint: CGFloat = snapPoints.map({ $0 - currentPosition + offset }).reduce(.greatestFiniteMagnitude, { abs($0) < abs($1) ? $0 : $1 })
         return distanceToPoint - offset
     }
     
+    /// Snap both the x and height based on the drawer's position and velocity.
+    /// - Parameter velocity: Current velocity of the bottom drawer.
     internal func snapToPoint(velocity: CGSize = .zero) {
         var animation: (CGFloat) -> Animation { { velocity in
             return .bouncy(duration: abs(1000 / velocity).clamped(to: 0.2...0.5))
         }}
         
-        if availableHeights.count > 0 {
+        if !availableHeights.isEmpty {
             withAnimation(velocity == .zero ? .linear : animation(velocity.height)) {
                 height += calculateSnap(snapPoints: availableHeights, currentPosition: height, offset: velocity.height / 6)
             }
         }
-        if availableWidths.count > 0 {
+        if !availableWidths.isEmpty {
             withAnimation(velocity == .zero ? .linear : animation(velocity.width)) {
                 xPos += calculateSnap(snapPoints: availableWidths, currentPosition: xPos, offset: -velocity.width / 10)
             }
         }
     }
     
+    /// A convienence function for completely repositioning the drawer based on a new screen size.
+    /// - Parameters:
+    ///   - size: Size of the screen
+    ///   - safeAreas: Safe areas of the screen
     internal func recalculateAll(size: CGSize, safeAreas: EdgeInsets) {
-        calculateIsShortCard(size: size)
+        calculateIsShortDrawer(size: size)
         let sizeCalculation: CGSize = CGSize(
             width: size.width,
-            height: size.height + (isShortCard ? -abs(safeAreas.top - safeAreas.bottom) : safeAreas.bottom)
+            height: size.height + (isShortDrawer ? -abs(safeAreas.top - safeAreas.bottom) : safeAreas.bottom)
         )
         calculateAvailableHeights(screenSize: sizeCalculation)
         calculateAvailableWidths(screenSize: sizeCalculation)
         snapToPoint()
         calculateScrollable()
     }
-
-    func calculateY(heightDelta: CGFloat, dampening: (CGFloat) -> CGFloat) {
+    
+    /// Calculate the new height of the drawer during movement, and dampens accordingly.
+    /// - Parameters:
+    ///   - heightDelta: Change in height.
+    ///   - dampening: Function for dampening the drawer as it moves.
+    func calculateHeight(heightDelta: CGFloat, dampening: (CGFloat) -> CGFloat) {
         guard let maxSnapPoint = availableHeights.max(),
               let minSnapPoint = availableHeights.min()
         else { return }
@@ -167,20 +206,26 @@ final class BottomDrawerVM: ObservableObject {
         }
     }
     
+    /// Calculate the new x position during a drag gesture, and snap and dampen accordingly.
+    /// - Parameters:
+    ///   - dragValue: Value generated by a drag gesture.
+    ///   - currentDrawerDrag: Distance the drawer has traveled during the gesture.
+    ///   - dampening: Function for dampening the drawer as it moves.
     func calculateX(dragValue: DragGesture.Value, currentDrawerDrag: CGSize, dampening: (CGFloat) -> CGFloat) {
-        if !isShortCard { return }
-        let dragAmount = dragValue.location.x + shortCardSize / 2
-        guard let nearestSnapPointToGesture = availableWidths.min(by: { abs($0 - dragValue.location.x + shortCardSize / 2) < abs($1 - dragValue.location.x + shortCardSize / 2) })
+        if !isShortDrawer { return }
+        let dragAmount = dragValue.location.x + shortDrawerSize / 2
+        guard let nearestSnapPointToGesture = availableWidths.min(by: { abs($0 - dragValue.location.x + shortDrawerSize / 2) < abs($1 - dragValue.location.x + shortDrawerSize / 2) })
         else { return }
         
         if abs(dragValue.translation.width) < minDragDistance { return } // Min horizontal drag
         let xFrameDelta = dragValue.translation.width - currentDrawerDrag.width
         
         withAnimation(.easeInOut(duration: 0.25)) {
-            xPos = nearestSnapPointToGesture - dampening(nearestSnapPointToGesture + shortCardSize / 2 - dragValue.location.x)
+            xPos = nearestSnapPointToGesture - dampening(nearestSnapPointToGesture + shortDrawerSize / 2 - dragValue.location.x)
         }
     }
     
+    /// Determine if the scroll view should be scrollable.
     func calculateScrollable() {
         if height >= contentHeight {
             scrollable = false

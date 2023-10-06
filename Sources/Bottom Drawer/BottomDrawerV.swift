@@ -8,17 +8,25 @@ import SwiftUI
 
 @available(iOS 16.0, macOS 13.0, *)
 public struct BottomDrawer: View {
+    /// Corner radius of the drawer.
     private let cornerRadius: CGFloat = 20
     @StateObject private var controller: BottomDrawerVM
+    /// Distance dragged throughout the drag gesture.
     @State private var currentDrawerDrag: CGSize = .zero
+    /// Used to determine if there was an incorrect application of the drag gesture for a single frame.
     @State private var oneFrameDragSkipped = false
+    /// Determine if we should use the change in geo or change in safe area.
     @State private var useChangeSize = true
     #if os(macOS)
+    /// Track the state of the bottom drawer button.
     @FocusState private var isButtonFocused
     #endif
+    /// Content to render in the drawer.
     private var content: any View
+    /// Name space for the area inside of the scroll view.
     let scrollNameSpace = "scroll"
     
+    /// Transparency of the black layer behind the bottom drawer.
     private var transparency: CGFloat {
         if controller.availableHeights.isEmpty { return 0 }
         let maxHeight = controller.availableHeights[controller.availableHeights.count - 1]
@@ -27,6 +35,7 @@ public struct BottomDrawer: View {
         return ((controller.height - maxHeight * fadeAtPercent) / (maxHeight * (1 - fadeAtPercent)) * maxFade).clamped(to: 0...maxFade)
     }
     
+    /// Gesture used for moving the drawer up, down, left, and right.
     private var drawerDrag: some Gesture {
         DragGesture(coordinateSpace: .global)
             .onChanged { update in
@@ -39,7 +48,7 @@ public struct BottomDrawer: View {
                     let distance = pow(abs(distancePast), 1 / 1.5)
                     return distancePast < 0 ? -distance : distance
                 }
-                controller.calculateY(heightDelta: update.translation.height - currentDrawerDrag.height, dampening: dampening)
+                controller.calculateHeight(heightDelta: update.translation.height - currentDrawerDrag.height, dampening: dampening)
                 controller.calculateX(dragValue: update, currentDrawerDrag: currentDrawerDrag, dampening: dampening)
                 currentDrawerDrag = update.translation
             }
@@ -51,6 +60,11 @@ public struct BottomDrawer: View {
             }
     }
     
+    /// Create a bottom drawer with detents and displayed content
+    /// - Parameters:
+    ///   - verticalDetents: Snap points for the height of the drawer.
+    ///   - horizontalDetents: Snap points in the horizontal direction.
+    ///   - content: Content to show on the bottom drawer
     public init(verticalDetents: Set<VerticalDetents>, horizontalDetents: Set<HorizontalDetents>, content: any View) {
         self._controller = StateObject(
             wrappedValue: BottomDrawerVM(
@@ -61,13 +75,18 @@ public struct BottomDrawer: View {
         self.content = content
     }
     
+    /// Create a bottom drawer with detents and displayed content
+    /// - Parameters:
+    ///   - verticalDetents: Snap points for the height of the drawer.
+    ///   - horizontalDetents: Snap points in the horizontal direction.
+    ///   - content: Content to show on the bottom drawer
     public init(verticalDetents: Set<VerticalDetents>, horizontalDetents: Set<HorizontalDetents>, content: () -> any View) {
         self.init(verticalDetents: verticalDetents, horizontalDetents: horizontalDetents, content: content())
     }
     
     public var body: some View {
         ZStack(alignment: .bottomTrailing) {
-            if !controller.isShortCard {
+            if !controller.isShortDrawer {
                 Color.black
                     .opacity(transparency)
                     .ignoresSafeArea()
@@ -112,21 +131,21 @@ public struct BottomDrawer: View {
                         )
                     }
                     .coordinateSpace(name: scrollNameSpace)
-                    .scenePadding(controller.isShortCard ? [] : [.bottom])
+                    .scenePadding(controller.isShortDrawer ? [] : [.bottom])
                     .scrollDisabled(!controller.scrollable)
                 }
                 .drawerLayer(
                     cornerRadii: RectangleCornerRadii(
                         topLeading: cornerRadius,
-                        bottomLeading: controller.isShortCard && geo.safeAreaInsets.bottom > 0 ? cornerRadius : 0,
-                        bottomTrailing: controller.isShortCard && geo.safeAreaInsets.bottom > 0 ? cornerRadius : 0,
+                        bottomLeading: controller.isShortDrawer && geo.safeAreaInsets.bottom > 0 ? cornerRadius : 0,
+                        bottomTrailing: controller.isShortDrawer && geo.safeAreaInsets.bottom > 0 ? cornerRadius : 0,
                         topTrailing: cornerRadius
                     )
                 )
-                .padding(.leading, controller.isShortCard && geo.safeAreaInsets.leading < geo.safeAreaInsets.bottom ? abs(geo.safeAreaInsets.leading - geo.safeAreaInsets.bottom) : 0)
-                .padding(.trailing, controller.isShortCard && geo.safeAreaInsets.trailing < geo.safeAreaInsets.bottom ? abs(geo.safeAreaInsets.trailing - geo.safeAreaInsets.bottom): 0)
+                .padding(.leading, controller.isShortDrawer && geo.safeAreaInsets.leading < geo.safeAreaInsets.bottom ? abs(geo.safeAreaInsets.leading - geo.safeAreaInsets.bottom) : 0)
+                .padding(.trailing, controller.isShortDrawer && geo.safeAreaInsets.trailing < geo.safeAreaInsets.bottom ? abs(geo.safeAreaInsets.trailing - geo.safeAreaInsets.bottom): 0)
                 .frame(
-                    width: controller.isShortCard ? controller.shortCardSize : geo.size.width,
+                    width: controller.isShortDrawer ? controller.shortDrawerSize : geo.size.width,
                     height: controller.height
                 )
                 .gesture(drawerDrag)
@@ -140,8 +159,8 @@ public struct BottomDrawer: View {
                 .onAppear { controller.recalculateAll(size: geo.size, safeAreas: geo.safeAreaInsets) }
                 .onPreferenceChange(ScrollOffsetPreferenceKey.self) { _ in if oneFrameDragSkipped { oneFrameDragSkipped = false } }
                 .offset(
-                    x: controller.isShortCard ? controller.xPos : 0,
-                    y: geo.size.height - controller.height + (controller.isShortCard ? 0 : geo.safeAreaInsets.bottom)
+                    x: controller.isShortDrawer ? controller.xPos : 0,
+                    y: geo.size.height - controller.height + (controller.isShortDrawer ? 0 : geo.safeAreaInsets.bottom)
                 )
             }
         }
