@@ -7,20 +7,22 @@
 import SwiftUI
 
 private struct DrawerLayer: ViewModifier {
-    private let cornerRadius: CGFloat = 20
+    internal let cornerRadii: RectangleCornerRadii
     
     fileprivate func body(content: Content) -> some View {
-        RoundedRectangle(cornerRadius: cornerRadius)
+        UnevenRoundedRectangle(cornerRadii: cornerRadii)
             .foregroundStyle(.regularMaterial)
-            .overlay {
-                content
-            }
+            .overlay { content }
             .clipped()
     }
 }
 
 public extension View {
-    func drawerLayer() -> some View {
-        modifier(DrawerLayer())
+    func drawerLayer(cornerRadius: CGFloat = 20) -> some View {
+        modifier(DrawerLayer(cornerRadii: RectangleCornerRadii(topLeading: cornerRadius, bottomLeading: cornerRadius, bottomTrailing: cornerRadius, topTrailing: cornerRadius)))
+    }
+    
+    func drawerLayer(cornerRadii: RectangleCornerRadii) -> some View {
+        modifier(DrawerLayer(cornerRadii: cornerRadii))
     }
 }

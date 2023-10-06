@@ -105,7 +105,14 @@ public struct BottomDrawer: View {
                     .scenePadding(controller.isShortCard ? [] : [.bottom])
                     .scrollDisabled(!controller.scrollable)
                 }
-                .drawerLayer()
+                .drawerLayer(
+                    cornerRadii: RectangleCornerRadii(
+                        topLeading: cornerRadius,
+                        bottomLeading: controller.isShortCard && geo.safeAreaInsets.bottom > 0 ? cornerRadius : 0,
+                        bottomTrailing: controller.isShortCard && geo.safeAreaInsets.bottom > 0 ? cornerRadius : 0,
+                        topTrailing: cornerRadius
+                    )
+                )
                 .padding(.leading, controller.isShortCard && geo.safeAreaInsets.leading < geo.safeAreaInsets.bottom ? abs(geo.safeAreaInsets.leading - geo.safeAreaInsets.bottom) : 0)
                 .padding(.trailing, controller.isShortCard && geo.safeAreaInsets.trailing < geo.safeAreaInsets.bottom ? abs(geo.safeAreaInsets.trailing - geo.safeAreaInsets.bottom): 0)
                 .frame(
