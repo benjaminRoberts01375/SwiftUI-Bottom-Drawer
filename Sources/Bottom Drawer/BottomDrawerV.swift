@@ -13,6 +13,9 @@ public struct BottomDrawer: View {
     @State private var currentDrawerDrag: CGSize = .zero
     @State private var oneFrameDragSkipped = false
     @State private var useChangeSize = true
+    #if os(macOS)
+    @FocusState private var isButtonFocused
+    #endif
     private var content: any View
     let scrollNameSpace = "scroll"
     
@@ -82,13 +85,20 @@ public struct BottomDrawer: View {
                         controller.calculateScrollable()
                     } label: {
                         Capsule()
-                            .foregroundStyle(.gray)
                             .frame(width: 50, height: 5)
                             .gesture(drawerDrag)
                             .padding(.top, 15)
                             .padding(.bottom, 5)
+                            #if os(macOS)
+                            .animation(.linear, value: isButtonFocused)
+                            .foregroundStyle(isButtonFocused ? .black : .gray)
+                            #endif
+                            .foregroundStyle(.gray)
                     }
                     .buttonStyle(.borderless)
+                    #if os(macOS)
+                    .focused($isButtonFocused)
+                    #endif
 
                     ScrollView {
                         AnyView(content)
