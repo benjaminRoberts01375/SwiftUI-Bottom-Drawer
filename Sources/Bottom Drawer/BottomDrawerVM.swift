@@ -153,16 +153,16 @@ final class BottomDrawerVM: ObservableObject {
               let minSnapPoint = availableHeights.min()
         else { return }
         
-        if height > maxSnapPoint { // Above max height
-            let distanceAbove = height - maxSnapPoint
-            height += heightDelta * (1 / dampening(maxSnapPoint - height + 1))
-        }
-        else if height < minSnapPoint { // Below max height
-            let distanceBelow = minSnapPoint - height
-            height -= heightDelta * (1 / dampening(minSnapPoint - height + 1))
-        }
-        else { // Normal scrolling
-            withAnimation(.easeInOut(duration: 0.1)) { // Handle any skips in frames
+        withAnimation(.easeInOut(duration: 0.25)) { // Handle any skips in frames
+            if height > maxSnapPoint { // Above max height
+                let distanceAbove = height - maxSnapPoint
+                height += heightDelta * (1 / dampening(maxSnapPoint - height + 1))
+            }
+            else if height < minSnapPoint { // Below max height
+                let distanceBelow = minSnapPoint - height
+                height -= heightDelta * (1 / dampening(minSnapPoint - height + 1))
+            }
+            else { // Normal scrolling
                 height -= heightDelta
             }
         }
@@ -177,7 +177,7 @@ final class BottomDrawerVM: ObservableObject {
         if abs(dragValue.translation.width) < minDragDistance { return } // Min horizontal drag
         let xFrameDelta = dragValue.translation.width - currentDrawerDrag.width
         
-        withAnimation(.easeInOut(duration: 0.5)) {
+        withAnimation(.easeInOut(duration: 0.25)) {
             xPos = nearestSnapPointToGesture - dampening(nearestSnapPointToGesture + shortCardSize / 2 - dragValue.location.x)
         }
     }
