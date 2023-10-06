@@ -13,6 +13,7 @@ public struct BottomDrawer: View {
     @State private var currentDrawerDrag: CGSize = .zero
     @State private var oneFrameDragSkipped = false
     @State private var useChangeSize = true
+    private var content: any View
     let scrollNameSpace = "scroll"
     
     private var transparency: CGFloat {
@@ -47,13 +48,18 @@ public struct BottomDrawer: View {
             }
     }
     
-    public init(verticalDetents: Set<VerticalDetents>, horizontalDetents: Set<HorizontalDetents>) {
+    public init(verticalDetents: Set<VerticalDetents>, horizontalDetents: Set<HorizontalDetents>, content: any View) {
         self._controller = StateObject(
             wrappedValue: BottomDrawerVM(
                 verticalDetents: verticalDetents,
                 horizontalDetents: horizontalDetents
             )
         )
+        self.content = content
+    }
+    
+    public init(verticalDetents: Set<VerticalDetents>, horizontalDetents: Set<HorizontalDetents>, content: () -> any View) {
+        self.init(verticalDetents: verticalDetents, horizontalDetents: horizontalDetents, content: content())
     }
     
     public var body: some View {
@@ -84,14 +90,7 @@ public struct BottomDrawer: View {
                     }
 
                     ScrollView {
-                        VStack {
-                            Text("Is short: \(controller.isShortCard ? "Yes." : "No.") \(geo.size.width)pt")
-                            Text("Height: \(controller.height)")
-                            Text("XPos: \(controller.xPos)")
-                            Text("Scrollable: \(controller.scrollable ? "true" : "false")")
-                            Color.yellow
-                                .frame(width: 100, height: 800)
-                        }
+                        AnyView(content)
                         .frame(width: geo.size.width)
                         .background(
                             GeometryReader { contentGeo in
@@ -153,6 +152,8 @@ struct ScrollOffsetPreferenceKey: PreferenceKey {
         BottomDrawer(
             verticalDetents: [.small, .medium, .large, .view],
             horizontalDetents: [.left, .right, .center]
-        )
+        ) {
+            Text("My view")
+        }
     }
 }
