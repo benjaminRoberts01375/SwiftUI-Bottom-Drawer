@@ -88,6 +88,7 @@ public struct BottomDrawer: View {
                             .padding(.top, 15)
                             .padding(.bottom, 5)
                     }
+                    .buttonStyle(.borderless)
 
                     ScrollView {
                         AnyView(content)
