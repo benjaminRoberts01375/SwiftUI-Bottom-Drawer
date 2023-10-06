@@ -102,7 +102,7 @@ public struct BottomDrawer: View {
                         )
                     }
                     .coordinateSpace(name: scrollNameSpace)
-                    .scenePadding([.bottom])
+                    .scenePadding(controller.isShortCard ? [] : [.bottom])
                     .scrollDisabled(!controller.scrollable)
                 }
                 .drawerLayer()
