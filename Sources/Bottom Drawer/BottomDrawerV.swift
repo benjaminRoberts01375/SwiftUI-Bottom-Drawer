@@ -98,9 +98,7 @@ public struct BottomDrawer: View {
                         guard let maxSnapPoint = controller.availableHeights.max(),
                               let minSnapPoint = controller.availableHeights.min()
                         else { return }
-                        withAnimation(.bouncy(duration: 0.5)) {
-                            controller.height = controller.height == maxSnapPoint ? minSnapPoint : maxSnapPoint
-                        }
+                        withAnimation(.bouncy(duration: 0.5)) { controller.height = controller.height == maxSnapPoint ? minSnapPoint : maxSnapPoint }
                         controller.calculateScrollable()
                     } label: {
                         Capsule()
@@ -153,9 +151,7 @@ public struct BottomDrawer: View {
                     controller.recalculateAll(size: geo.size, safeAreas: $0)
                     if useChangeSize { useChangeSize = false }
                 }
-                .onChange(of: geo.size) { size in
-                    if useChangeSize { controller.recalculateAll(size: size, safeAreas: geo.safeAreaInsets) }
-                }
+                .onChange(of: geo.size) { if useChangeSize { controller.recalculateAll(size: $0, safeAreas: geo.safeAreaInsets) } }
                 .onAppear { controller.recalculateAll(size: geo.size, safeAreas: geo.safeAreaInsets) }
                 .onPreferenceChange(ScrollOffsetPreferenceKey.self) { _ in if oneFrameDragSkipped { oneFrameDragSkipped = false } }
                 .offset(
