@@ -118,14 +118,14 @@ public struct BottomDrawer: View {
                     #if os(macOS)
                     .focused($isButtonFocused)
                     #endif
-
+                    
                     ScrollView {
                         AnyView(content)
-                        .frame(width: geo.size.width)
                         .background(
                             GeometryReader { contentGeo in
                                 Color.clear
                                     .onAppear { controller.contentHeight = contentGeo.size.height }
+                                    .onChange(of: contentGeo.size) { newGeo in controller.contentHeight = newGeo.height }
                                     .preference(key: ScrollOffsetPreferenceKey.self, value: contentGeo.frame(in: .named(scrollNameSpace)).origin)
                             }
                         )
@@ -170,7 +170,7 @@ public struct BottomDrawer: View {
 struct ScrollOffsetPreferenceKey: PreferenceKey {
     static var defaultValue: CGPoint = .zero
     
-    static func reduce(value: inout CGPoint, nextValue: () -> CGPoint) { 
+    static func reduce(value: inout CGPoint, nextValue: () -> CGPoint) {
         defaultValue = nextValue()
     }
 }
