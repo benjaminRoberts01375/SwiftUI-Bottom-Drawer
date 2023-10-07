@@ -36,8 +36,11 @@ final class BottomDrawerVM: ObservableObject {
     /// Tracker for if the drawer should be rendered a limited width.
     @Published internal var isShortDrawer: Bool = false
     
+    /// Tracker for the height of the header potentially passed to the drawer.
+    internal var headerHeight: CGFloat = 0
     /// Tracker for the height of the content passed to the drawer.
     internal var contentHeight: CGFloat = 0
+    /// Tracks if the drawer is allowing the user to use the scroll view.
     @Published internal var scrollable: Bool = false
     /// Min x drag distance before distance is considered.
     private let minDragDistance: CGFloat = 40
@@ -74,8 +77,10 @@ final class BottomDrawerVM: ObservableObject {
             case .exactly(let height):
                 if height <= 0 { continue }
                 availableHeights.append(height)
-            case .view:
-                availableHeights.append(contentHeight)
+            case .header:
+                availableHeights.append(headerHeight + 35)
+            case .content:
+                availableHeights.append(contentHeight + headerHeight + 45)
             }
         }
         

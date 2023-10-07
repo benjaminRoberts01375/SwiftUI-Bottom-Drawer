@@ -12,7 +12,8 @@ public enum VerticalDetents: Hashable {
     case large
     case fraction(CGFloat)
     case exactly(CGFloat)
-    case view
+    case content
+    case header
 }
 
 public enum HorizontalDetents: Hashable {

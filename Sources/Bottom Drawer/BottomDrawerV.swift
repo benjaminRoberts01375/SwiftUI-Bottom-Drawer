@@ -20,11 +20,15 @@ public struct BottomDrawer: View {
     #if os(macOS)
     /// Track the state of the bottom drawer button.
     @FocusState private var isButtonFocused
-    #endif
+#endif
+    /// View to render above the content.
+    private var header: any View
     /// Content to render in the drawer.
     private var content: any View
     /// Name space for the area inside of the scroll view.
     let scrollNameSpace = "scroll"
+    /// Tracker for if the bottom drawer was provided a header
+    let hasHeader: Bool
     
     /// Transparency of the black layer behind the bottom drawer.
     private var transparency: CGFloat {
@@ -65,7 +69,7 @@ public struct BottomDrawer: View {
     ///   - verticalDetents: Snap points for the height of the drawer.
     ///   - horizontalDetents: Snap points in the horizontal direction.
     ///   - content: Content to show on the bottom drawer
-    public init(verticalDetents: Set<VerticalDetents>, horizontalDetents: Set<HorizontalDetents>, content: any View) {
+    public init(verticalDetents: Set<VerticalDetents>, horizontalDetents: Set<HorizontalDetents>, header: any View = EmptyView(), content: any View) {
         self._controller = StateObject(
             wrappedValue: BottomDrawerVM(
                 verticalDetents: verticalDetents,
@@ -73,6 +77,8 @@ public struct BottomDrawer: View {
             )
         )
         self.content = content
+        hasHeader = Mirror(reflecting: header).description != "Mirror for EmptyView"
+        self.header = header
     }
     
     /// Create a bottom drawer with detents and displayed content
@@ -80,8 +86,8 @@ public struct BottomDrawer: View {
     ///   - verticalDetents: Snap points for the height of the drawer.
     ///   - horizontalDetents: Snap points in the horizontal direction.
     ///   - content: Content to show on the bottom drawer
-    public init(verticalDetents: Set<VerticalDetents>, horizontalDetents: Set<HorizontalDetents>, content: () -> any View) {
-        self.init(verticalDetents: verticalDetents, horizontalDetents: horizontalDetents, content: content())
+    public init(verticalDetents: Set<VerticalDetents>, horizontalDetents: Set<HorizontalDetents>, header: () -> any View = { EmptyView() }, content: () -> any View) {
+        self.init(verticalDetents: verticalDetents, horizontalDetents: horizontalDetents, header: header(), content: content())
     }
     
     public var body: some View {
@@ -116,7 +122,16 @@ public struct BottomDrawer: View {
                     #if os(macOS)
                     .focused($isButtonFocused)
                     #endif
-                    
+                    if hasHeader {
+                        AnyView(header)
+                            .background(
+                                GeometryReader { headerGeo in
+                                    Color.clear
+                                        .onAppear { controller.headerHeight = headerGeo.size.height }
+                                        .onChange(of: headerGeo.size) { newGeo in controller.headerHeight = newGeo.height }
+                                }
+                            )
+                    }
                     ScrollView {
                         AnyView(content)
                         .background(
@@ -183,7 +198,7 @@ struct ScrollOffsetPreferenceKey: PreferenceKey {
             .ignoresSafeArea()
         
         BottomDrawer(
-            verticalDetents: [.small, .medium, .large, .view],
+            verticalDetents: [.small, .medium, .large, .content],
             horizontalDetents: [.left, .right, .center]
         ) {
             Text("My view")
