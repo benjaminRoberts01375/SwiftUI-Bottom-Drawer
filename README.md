@@ -3,8 +3,9 @@
 
 ## Features
 * Holds your stuff.
+ * Can be optionally organized with a header.
 * Support for iPhone, iPad, and macOS.
-* Programmable height snap points with `.small`, `.medium`, `.large`, `.exact`, `.fraction`, and `view`.
+* Programmable height snap points with `.small`, `.medium`, `.large`, `.exact`, `.fraction`, `content`, and `header`.
 * Programmable x position snap points with `.left`, `.right`, and `.center`.
   * "Sticks" to x position snap points with dampening.
 * Handles rotation and gets out of the way when possible by shrinking the width.
