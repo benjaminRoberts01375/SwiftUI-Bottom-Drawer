@@ -33,16 +33,18 @@ The Swift Package Manager is the current installation method for the infinite gr
 ## Demo
 ### Vertical iPhone
 
-![iPhone Vertical](https://github.com/benjaminRoberts01375/SwiftUI-Bottom-Drawer/assets/61424934/c89e4a27-6930-45a4-8642-a0c7ddd8fc45)
+![iPhone Vertical](https://github.com/benjaminRoberts01375/SwiftUI-Bottom-Drawer/assets/61424934/75ca8334-df30-4056-8382-c7bbe77d1093)
+
 
 ### Horizontal iPhone
 
-![iPhone Horizontal](https://github.com/benjaminRoberts01375/SwiftUI-Bottom-Drawer/assets/61424934/5f0e414c-4934-4513-9513-92e653cd73c9) 
+![iPhone Horizontal](https://github.com/benjaminRoberts01375/SwiftUI-Bottom-Drawer/assets/61424934/1508a363-44fb-4c60-a316-5c99fd19be3e)
 
 ### iPad
 
-![IMG_68365CE46645-1](https://github.com/benjaminRoberts01375/SwiftUI-Bottom-Drawer/assets/61424934/45b39b37-4471-4ca5-8b2d-5ff644d9e565)
+![iPad](https://github.com/benjaminRoberts01375/SwiftUI-Bottom-Drawer/assets/61424934/2e407a13-0e3c-45ed-9c4a-a4fd581d886b)
+
 
 ### macOS
 
-![BottomDrawer screenshot 2 Medium](https://github.com/benjaminRoberts01375/SwiftUI-Bottom-Drawer/assets/61424934/d0e31e8e-cfa7-4c79-a22f-2f656535d09a)
+![macOS](https://github.com/benjaminRoberts01375/SwiftUI-Bottom-Drawer/assets/61424934/606fe795-a36d-4bd5-a552-1813178fb40f)
