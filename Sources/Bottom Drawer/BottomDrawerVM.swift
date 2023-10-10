@@ -42,6 +42,8 @@ final class BottomDrawerVM: ObservableObject {
     internal var contentHeight: CGFloat = 0
     /// Tracks if the drawer is allowing the user to use the scroll view.
     @Published internal var scrollable: Bool = false
+    /// Prevent any amount of scrolling on the drawer.
+    let preventAnyScroll: Bool
     /// Min x drag distance before distance is considered.
     private let minDragDistance: CGFloat = 40
     
@@ -49,12 +51,13 @@ final class BottomDrawerVM: ObservableObject {
     /// - Parameters:
     ///   - verticalDetents: Requested snap points for the height of the drawer.
     ///   - horizontalDetents: Requested snap points for dragging the drawer horizontally.
-    init(verticalDetents: Set<VerticalDetents>, horizontalDetents: Set<HorizontalDetents>) {
+    init(verticalDetents: Set<VerticalDetents>, horizontalDetents: Set<HorizontalDetents>, preventScrolling: Bool) {
         self.verticalDetents = verticalDetents
         self.horizontalDetents = horizontalDetents
         self.availableHeights = []
         self.availableWidths = []
         self.height = 200
+        self.preventAnyScroll = preventScrolling
     }
     
     /// Determine the available heights of the bottom drawer based on the requested heights and screen size.
@@ -233,6 +236,10 @@ final class BottomDrawerVM: ObservableObject {
     
     /// Determine if the scroll view should be scrollable.
     func calculateScrollable() {
+        if preventAnyScroll {
+            scrollable = false
+            return
+        }
         if height >= contentHeight {
             scrollable = false
             return

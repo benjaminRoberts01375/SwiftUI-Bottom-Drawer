@@ -69,11 +69,12 @@ public struct BottomDrawer: View {
     ///   - verticalDetents: Snap points for the height of the drawer.
     ///   - horizontalDetents: Snap points in the horizontal direction.
     ///   - content: Content to show on the bottom drawer
-    public init(verticalDetents: Set<VerticalDetents>, horizontalDetents: Set<HorizontalDetents>, header: any View = EmptyView(), content: any View) {
+    public init(verticalDetents: Set<VerticalDetents>, horizontalDetents: Set<HorizontalDetents>, preventScrolling: Bool = false, header: any View = EmptyView(), content: any View) {
         self._controller = StateObject(
             wrappedValue: BottomDrawerVM(
                 verticalDetents: verticalDetents,
-                horizontalDetents: horizontalDetents
+                horizontalDetents: horizontalDetents,
+                preventScrolling: preventScrolling
             )
         )
         self.content = content
@@ -86,8 +87,8 @@ public struct BottomDrawer: View {
     ///   - verticalDetents: Snap points for the height of the drawer.
     ///   - horizontalDetents: Snap points in the horizontal direction.
     ///   - content: Content to show on the bottom drawer
-    public init(verticalDetents: Set<VerticalDetents>, horizontalDetents: Set<HorizontalDetents>, header: () -> any View = { EmptyView() }, content: () -> any View) {
-        self.init(verticalDetents: verticalDetents, horizontalDetents: horizontalDetents, header: header(), content: content())
+    public init(verticalDetents: Set<VerticalDetents>, horizontalDetents: Set<HorizontalDetents>, preventScrolling: Bool = false, header: () -> any View = { EmptyView() }, content: () -> any View) {
+        self.init(verticalDetents: verticalDetents, horizontalDetents: horizontalDetents, preventScrolling: preventScrolling, header: header(), content: content())
     }
     
     public var body: some View {
