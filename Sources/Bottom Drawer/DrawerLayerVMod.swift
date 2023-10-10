@@ -8,10 +8,12 @@ import SwiftUI
 
 private struct DrawerLayer: ViewModifier {
     internal let cornerRadii: RectangleCornerRadii
+    /// Track dark/light mode
+    @Environment(\.colorScheme) var colorScheme
     
     fileprivate func body(content: Content) -> some View {
         UnevenRoundedRectangle(cornerRadii: cornerRadii)
-            .foregroundStyle(.regularMaterial)
+            .foregroundStyle(colorScheme == .light ? .regularMaterial : .thickMaterial)
             .overlay { content }
             .clipped()
     }
