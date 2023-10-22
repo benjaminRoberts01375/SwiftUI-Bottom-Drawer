@@ -74,7 +74,7 @@ final class BottomDrawerVM: ObservableObject {
             case .small:
                 availableHeights.append(screenSize.height * 0.2)
             case .fraction(let fraction):
-                height = screenSize.height * fraction
+                let height = screenSize.height * fraction
                 if height <= 0 { continue }
                 availableHeights.append(height)
             case .exactly(let height):
