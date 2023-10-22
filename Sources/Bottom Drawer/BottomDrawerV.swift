@@ -138,8 +138,14 @@ public struct BottomDrawer: View {
                         .background(
                             GeometryReader { contentGeo in
                                 Color.clear
-                                    .onAppear { controller.contentHeight = contentGeo.size.height }
-                                    .onChange(of: contentGeo.size) { newGeo in controller.contentHeight = newGeo.height }
+                                    .onAppear {
+                                        controller.contentHeight = contentGeo.size.height
+                                        controller.recalculateAll(size: geo.size, safeAreas: geo.safeAreaInsets)
+                                    }
+                                    .onChange(of: contentGeo.size) { newGeo in
+                                        controller.contentHeight = newGeo.height
+                                        controller.recalculateAll(size: geo.size, safeAreas: geo.safeAreaInsets)
+                                    }
                                     .preference(key: ScrollOffsetPreferenceKey.self, value: contentGeo.frame(in: .named(scrollNameSpace)).origin)
                             }
                         )
