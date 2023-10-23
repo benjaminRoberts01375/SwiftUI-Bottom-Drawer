@@ -33,6 +33,7 @@ public struct BottomDrawer: View {
     /// Transparency of the black layer behind the bottom drawer.
     private var transparency: CGFloat {
         if controller.availableHeights.isEmpty { return 0 }
+        if controller.availableHeights.last ?? 0 < 500 { return 0 }
         let maxHeight = controller.availableHeights[controller.availableHeights.count - 1]
         let fadeAtPercent = 0.75
         let maxFade = 0.5
