@@ -7,7 +7,7 @@
 import SwiftUI
 
 @available(iOS 16.0, macOS 13.0, *)
-public struct BottomDrawer: View {
+public struct BottomDrawer<Content>: View where Content: View {
     /// Corner radius of the drawer.
     private let cornerRadius: CGFloat = 20
     @StateObject private var controller: BottomDrawerVM
@@ -22,13 +22,11 @@ public struct BottomDrawer: View {
     @FocusState private var isButtonFocused
 #endif
     /// View to render above the content.
-    private var header: any View
+    private var header: ((Bool) -> Content)?
     /// Content to render in the drawer.
-    private var content: any View
+    private var content: (Bool) -> Content
     /// Name space for the area inside of the scroll view.
     let scrollNameSpace = "scroll"
-    /// Tracker for if the bottom drawer was provided a header
-    let hasHeader: Bool
     
     /// Transparency of the black layer behind the bottom drawer.
     private var transparency: CGFloat {
@@ -70,7 +68,13 @@ public struct BottomDrawer: View {
     ///   - verticalDetents: Snap points for the height of the drawer.
     ///   - horizontalDetents: Snap points in the horizontal direction.
     ///   - content: Content to show on the bottom drawer
-    public init(verticalDetents: Set<VerticalDetents>, horizontalDetents: Set<HorizontalDetents>, preventScrolling: Bool = false, header: any View = EmptyView(), content: any View) {
+    public init(
+        verticalDetents: Set<VerticalDetents>,
+        horizontalDetents: Set<HorizontalDetents>,
+        preventScrolling: Bool = false,
+        header: ((Bool) -> Content)? = nil,
+        @ViewBuilder content: @escaping (Bool) -> Content
+    ) {
         self._controller = StateObject(
             wrappedValue: BottomDrawerVM(
                 verticalDetents: verticalDetents,
@@ -78,18 +82,8 @@ public struct BottomDrawer: View {
                 preventScrolling: preventScrolling
             )
         )
-        self.content = content
-        hasHeader = Mirror(reflecting: header).description != "Mirror for EmptyView"
         self.header = header
-    }
-    
-    /// Create a bottom drawer with detents and displayed content
-    /// - Parameters:
-    ///   - verticalDetents: Snap points for the height of the drawer.
-    ///   - horizontalDetents: Snap points in the horizontal direction.
-    ///   - content: Content to show on the bottom drawer
-    public init(verticalDetents: Set<VerticalDetents>, horizontalDetents: Set<HorizontalDetents>, preventScrolling: Bool = false, header: () -> any View = { EmptyView() }, content: () -> any View) {
-        self.init(verticalDetents: verticalDetents, horizontalDetents: horizontalDetents, preventScrolling: preventScrolling, header: header(), content: content())
+        self.content = content
     }
     
     public var body: some View {
@@ -124,8 +118,8 @@ public struct BottomDrawer: View {
                     #if os(macOS)
                     .focused($isButtonFocused)
                     #endif
-                    if hasHeader {
-                        AnyView(header)
+                    if let header = header {
+                        header(controller.isShortDrawer)
                             .background(
                                 GeometryReader { headerGeo in
                                     Color.clear
@@ -135,7 +129,7 @@ public struct BottomDrawer: View {
                             )
                     }
                     ScrollView {
-                        AnyView(content)
+                        content(controller.isShortDrawer)
                         .background(
                             GeometryReader { contentGeo in
                                 Color.clear
@@ -208,8 +202,9 @@ struct ScrollOffsetPreferenceKey: PreferenceKey {
         BottomDrawer(
             verticalDetents: [.small, .medium, .large, .content],
             horizontalDetents: [.left, .right, .center]
-        ) {
-            Text("My view")
+        ) { shortCardStatus in
+            Text("Content")
+            Text("Is short card: \(shortCardStatus.description)")
         }
     }
 }
