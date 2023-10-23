@@ -81,7 +81,7 @@ final class BottomDrawerVM: ObservableObject {
                 if height <= 0 { continue }
                 availableHeights.append(height)
             case .header:
-                availableHeights.append(headerHeight + 35)
+                availableHeights.append(headerHeight + 45)
             case .content:
                 availableHeights.append(contentHeight + headerHeight + 45)
             }

@@ -123,8 +123,14 @@ public struct BottomDrawer: View {
                             .background(
                                 GeometryReader { headerGeo in
                                     Color.clear
-                                        .onAppear { controller.headerHeight = headerGeo.size.height }
-                                        .onChange(of: headerGeo.size) { newGeo in controller.headerHeight = newGeo.height }
+                                        .onAppear {
+                                            controller.headerHeight = headerGeo.size.height
+                                            controller.recalculateAll(size: geo.size, safeAreas: geo.safeAreaInsets)
+                                        }
+                                        .onChange(of: headerGeo.size) { newGeo in
+                                            controller.headerHeight = newGeo.height
+                                            controller.recalculateAll(size: geo.size, safeAreas: geo.safeAreaInsets)
+                                        }
                                 }
                             )
                     }
