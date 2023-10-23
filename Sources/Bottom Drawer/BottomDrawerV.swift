@@ -7,7 +7,7 @@
 import SwiftUI
 
 @available(iOS 16.0, macOS 13.0, *)
-public struct BottomDrawer<Content>: View where Content: View {
+public struct BottomDrawer: View {
     /// Corner radius of the drawer.
     private let cornerRadius: CGFloat = 20
     @StateObject private var controller: BottomDrawerVM
@@ -22,9 +22,9 @@ public struct BottomDrawer<Content>: View where Content: View {
     @FocusState private var isButtonFocused
 #endif
     /// View to render above the content.
-    private var header: ((Bool) -> Content)?
+    private var header: ((Bool) -> any View)?
     /// Content to render in the drawer.
-    private var content: (Bool) -> Content
+    private var content: (Bool) -> any View
     /// Name space for the area inside of the scroll view.
     let scrollNameSpace = "scroll"
     
@@ -72,8 +72,8 @@ public struct BottomDrawer<Content>: View where Content: View {
         verticalDetents: Set<VerticalDetents>,
         horizontalDetents: Set<HorizontalDetents>,
         preventScrolling: Bool = false,
-        header: ((Bool) -> Content)? = nil,
-        @ViewBuilder content: @escaping (Bool) -> Content
+        header: ((Bool) -> any View)? = nil,
+        @ViewBuilder content: @escaping (Bool) -> any View
     ) {
         self._controller = StateObject(
             wrappedValue: BottomDrawerVM(
@@ -119,7 +119,7 @@ public struct BottomDrawer<Content>: View where Content: View {
                     .focused($isButtonFocused)
                     #endif
                     if let header = header {
-                        header(controller.isShortDrawer)
+                        AnyView(header(controller.isShortDrawer))
                             .background(
                                 GeometryReader { headerGeo in
                                     Color.clear
@@ -129,7 +129,7 @@ public struct BottomDrawer<Content>: View where Content: View {
                             )
                     }
                     ScrollView {
-                        content(controller.isShortDrawer)
+                        AnyView(content(controller.isShortDrawer))
                         .background(
                             GeometryReader { contentGeo in
                                 Color.clear
