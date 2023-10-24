@@ -40,6 +40,8 @@ final class BottomDrawerVM: ObservableObject {
     internal var headerHeight: CGFloat = 0
     /// Tracker for the height of the content passed to the drawer.
     internal var contentHeight: CGFloat = 0
+    /// Current opacity of the content ranging from 0-1.
+    @Published var contentOpacity: CGFloat = 0
     /// Tracks if the drawer is allowing the user to use the scroll view.
     @Published internal var scrollable: Bool = false
     /// Prevent any amount of scrolling on the drawer.
@@ -156,6 +158,12 @@ final class BottomDrawerVM: ObservableObject {
         return distanceToPoint - offset
     }
     
+    /// Determine the opacity of the content based on the height of the drawer
+    private func calculateContentOpacity() {
+        let headerHeight = headerHeight + 45
+        contentOpacity = (height - 20 - headerHeight) / (minDetentDelta)
+    }
+    
     /// Snap both the x and height based on the drawer's position and velocity.
     /// - Parameter velocity: Current velocity of the bottom drawer.
     internal func snapToPoint(velocity: CGSize = .zero) {
@@ -166,6 +174,7 @@ final class BottomDrawerVM: ObservableObject {
         if !availableHeights.isEmpty {
             withAnimation(velocity == .zero ? .linear : animation(velocity.height)) {
                 height += calculateSnap(snapPoints: availableHeights, currentPosition: height, offset: velocity.height / 6)
+                calculateContentOpacity()
             }
         }
         if !availableWidths.isEmpty {
@@ -212,6 +221,7 @@ final class BottomDrawerVM: ObservableObject {
             else { // Normal scrolling
                 height -= heightDelta
             }
+            calculateContentOpacity()
         }
     }
     

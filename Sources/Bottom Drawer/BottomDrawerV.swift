@@ -150,6 +150,7 @@ public struct BottomDrawer: View {
                                     .preference(key: ScrollOffsetPreferenceKey.self, value: contentGeo.frame(in: .named(scrollNameSpace)).origin)
                             }
                         )
+                        .opacity(controller.contentOpacity)
                     }
                     .coordinateSpace(name: scrollNameSpace)
                     .scenePadding(controller.isShortDrawer ? [] : [.bottom])
