@@ -16,7 +16,7 @@ final class BottomDrawerVM: ObservableObject {
     /// Actual snap points for dragging the drawer horizontally.
     internal var availableWidths: [CGFloat]
     /// Min allowed distance between snap points.
-    private let minDetentDelta: CGFloat = 30
+    private let minDetentDelta: CGFloat = 60
     
     /// Height of the drawer.
     @Published var height: CGFloat {
