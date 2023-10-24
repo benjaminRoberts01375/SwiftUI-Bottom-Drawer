@@ -72,6 +72,7 @@ public struct BottomDrawer: View {
         verticalDetents: Set<VerticalDetents>,
         horizontalDetents: Set<HorizontalDetents>,
         preventScrolling: Bool = false,
+        shortCardSize: CGFloat = 300,
         header: ((Bool) -> any View)? = nil,
         @ViewBuilder content: @escaping (Bool) -> any View
     ) {
@@ -79,7 +80,8 @@ public struct BottomDrawer: View {
             wrappedValue: BottomDrawerVM(
                 verticalDetents: verticalDetents,
                 horizontalDetents: horizontalDetents,
-                preventScrolling: preventScrolling
+                preventScrolling: preventScrolling,
+                shortCardSize: shortCardSize
             )
         )
         self.header = header

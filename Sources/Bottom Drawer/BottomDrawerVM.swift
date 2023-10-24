@@ -30,7 +30,7 @@ final class BottomDrawerVM: ObservableObject {
     @Published var xPos: CGFloat = 0
     
     /// Width for when the drawer is short.
-    internal let shortDrawerSize: CGFloat = 300
+    internal let shortDrawerSize: CGFloat
     /// Min allowed space available on screen next to the short drawer.
     private let requiredFreeWidth: CGFloat = 350
     /// Tracker for if the drawer should be rendered a limited width.
@@ -53,12 +53,13 @@ final class BottomDrawerVM: ObservableObject {
     /// - Parameters:
     ///   - verticalDetents: Requested snap points for the height of the drawer.
     ///   - horizontalDetents: Requested snap points for dragging the drawer horizontally.
-    init(verticalDetents: Set<VerticalDetents>, horizontalDetents: Set<HorizontalDetents>, preventScrolling: Bool) {
+    init(verticalDetents: Set<VerticalDetents>, horizontalDetents: Set<HorizontalDetents>, preventScrolling: Bool, shortCardSize: CGFloat) {
         self.verticalDetents = verticalDetents
         self.horizontalDetents = horizontalDetents
         self.availableHeights = []
         self.availableWidths = []
-        self.height = 200
+        self.height = 20
+        self.shortDrawerSize = shortCardSize
         self.preventAnyScroll = preventScrolling
     }
     
