@@ -28,6 +28,8 @@ public struct BottomDrawer: View {
     /// Name space for the area inside of the scroll view.
     let scrollNameSpace = "scroll"
     
+    @State var showingKeyboard: Bool = false
+    
     /// Transparency of the black layer behind the bottom drawer.
     private var transparency: CGFloat {
         if controller.availableHeights.isEmpty { return 0 }
@@ -158,16 +160,24 @@ public struct BottomDrawer: View {
                     .scenePadding(controller.isShortDrawer ? [] : [.bottom])
                     .scrollDisabled(!controller.scrollable)
                 }
+                .onAppear {
+                    NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillShowNotification, object: nil, queue: .main) { _ in // Add observer for keeping track of keyboard raising
+                        self.showingKeyboard = true
+                    }
+                    NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillHideNotification, object: nil, queue: .main) { _ in // Add observer for keeping track of keyboard hiding
+                        self.showingKeyboard = false
+                    }
+                }
                 .drawerLayer(
                     cornerRadii: RectangleCornerRadii(
                         topLeading: cornerRadius,
-                        bottomLeading: controller.isShortDrawer && geo.safeAreaInsets.bottom > 0 ? cornerRadius : 0,
-                        bottomTrailing: controller.isShortDrawer && geo.safeAreaInsets.bottom > 0 ? cornerRadius : 0,
+                        bottomLeading: showingKeyboard || (controller.isShortDrawer && geo.safeAreaInsets.bottom > 0) ? cornerRadius : 0,
+                        bottomTrailing: showingKeyboard || (controller.isShortDrawer && geo.safeAreaInsets.bottom > 0) ? cornerRadius : 0,
                         topTrailing: cornerRadius
                     )
                 )
-                .padding(.leading, controller.isShortDrawer && geo.safeAreaInsets.leading < geo.safeAreaInsets.bottom ? abs(geo.safeAreaInsets.leading - geo.safeAreaInsets.bottom) : 0)
-                .padding(.trailing, controller.isShortDrawer && geo.safeAreaInsets.trailing < geo.safeAreaInsets.bottom ? abs(geo.safeAreaInsets.trailing - geo.safeAreaInsets.bottom): 0)
+                .padding(.leading, controller.isShortDrawer && geo.safeAreaInsets.leading < geo.safeAreaInsets.bottom && !showingKeyboard ? abs(geo.safeAreaInsets.leading - geo.safeAreaInsets.bottom) : 0)
+                .padding(.trailing, controller.isShortDrawer && geo.safeAreaInsets.trailing < geo.safeAreaInsets.bottom && !showingKeyboard ? abs(geo.safeAreaInsets.trailing - geo.safeAreaInsets.bottom): 0)
                 .frame(
                     width: controller.isShortDrawer ? controller.shortDrawerSize : geo.size.width,
                     height: controller.height
@@ -182,7 +192,7 @@ public struct BottomDrawer: View {
                 .onPreferenceChange(ScrollOffsetPreferenceKey.self) { _ in if oneFrameDragSkipped { oneFrameDragSkipped = false } }
                 .offset(
                     x: controller.isShortDrawer ? controller.xPos : 0,
-                    y: geo.size.height - controller.height + (controller.isShortDrawer ? 0 : geo.safeAreaInsets.bottom)
+                    y: geo.size.height - controller.height + (controller.isShortDrawer || showingKeyboard ? 0 : geo.safeAreaInsets.bottom)
                 )
             }
         }
