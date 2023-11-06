@@ -161,6 +161,10 @@ final class BottomDrawerVM: ObservableObject {
     
     /// Determine the opacity of the content based on the height of the drawer
     private func calculateContentOpacity() {
+        if availableHeights.count < 3 {
+            contentOpacity = 1
+            return
+        }
         let headerHeight = headerHeight + 45
         contentOpacity = (height - 20 - headerHeight) / (minDetentDelta)
     }
