@@ -265,4 +265,15 @@ final class BottomDrawerVM: ObservableObject {
         }
         scrollable = false
     }
+    
+    /// Determine the height of the drawer when the drag indicator is tapped
+    func buttonSnap() {
+        guard let maxSnapPoint = availableHeights.max(),
+              let minSnapPoint = availableHeights.min()
+        else { return }
+        withAnimation(.bouncy(duration: 0.5)) {
+            height = height == maxSnapPoint ? minSnapPoint : maxSnapPoint
+        }
+        calculateContentOpacity()
+    }
 }

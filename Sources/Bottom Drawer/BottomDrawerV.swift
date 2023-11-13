@@ -101,10 +101,7 @@ public struct BottomDrawer: View {
             GeometryReader { geo in
                 VStack {
                     Button {
-                        guard let maxSnapPoint = controller.availableHeights.max(),
-                              let minSnapPoint = controller.availableHeights.min()
-                        else { return }
-                        withAnimation(.bouncy(duration: 0.5)) { controller.height = controller.height == maxSnapPoint ? minSnapPoint : maxSnapPoint }
+                        controller.buttonSnap()
                         controller.calculateScrollable()
                     } label: {
                         Capsule()
