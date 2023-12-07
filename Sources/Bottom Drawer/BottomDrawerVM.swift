@@ -8,9 +8,9 @@ import SwiftUI
 
 final class BottomDrawerVM: ObservableObject {
     /// Requested snap points for the height of the drawer.
-    private let verticalDetents: Set<VerticalDetents>
+    internal let verticalDetents: Set<VerticalDetents>
     /// Requested snap points for dragging the drawer horizontally.
-    private let horizontalDetents: Set<HorizontalDetents>
+    internal let horizontalDetents: Set<HorizontalDetents>
     /// Actual snap points for the height of the drawer.
     internal var availableHeights: [CGFloat]
     /// Actual snap points for dragging the drawer horizontally.
