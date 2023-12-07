@@ -100,27 +100,25 @@ public struct BottomDrawer: View {
             }
             GeometryReader { geo in
                 VStack {
-                    if controller.verticalDetents.count > 1 || controller.horizontalDetents.count > 1 {
-                        Button {
-                            controller.buttonSnap()
-                            controller.calculateScrollable()
-                        } label: {
-                            Capsule()
-                                .frame(width: 50, height: 5)
-                                .gesture(drawerDrag)
-                                .padding(.top, 15)
-                                .padding(.bottom, 5)
-                                #if os(macOS)
-                                .animation(.linear, value: isButtonFocused)
-                                .foregroundStyle(isButtonFocused ? .black : .gray)
-                                #endif
-                                .foregroundStyle(.gray)
-                        }
-                        .buttonStyle(.borderless)
-                        #if os(macOS)
-                        .focused($isButtonFocused)
-                        #endif
+                    Button {
+                        controller.buttonSnap()
+                        controller.calculateScrollable()
+                    } label: {
+                        Capsule()
+                            .frame(width: 50, height: 5)
+                            .gesture(drawerDrag)
+                            .padding(.top, 15)
+                            .padding(.bottom, 5)
+                            #if os(macOS)
+                            .animation(.linear, value: isButtonFocused)
+                            .foregroundStyle(isButtonFocused ? .black : .gray)
+                            #endif
+                            .foregroundStyle(.gray)
                     }
+                    .buttonStyle(.borderless)
+                    #if os(macOS)
+                    .focused($isButtonFocused)
+                    #endif
                     if let header = header {
                         AnyView(header(controller.isShortDrawer))
                             .background(
@@ -139,7 +137,6 @@ public struct BottomDrawer: View {
                     }
                     ScrollView {
                         AnyView(content(controller.isShortDrawer))
-                            .padding(.top, controller.verticalDetents.count > 1 || controller.horizontalDetents.count > 1 ? 0 : 10)
                         .background(
                             GeometryReader { contentGeo in
                                 Color.clear
@@ -222,33 +219,8 @@ struct ScrollOffsetPreferenceKey: PreferenceKey {
             verticalDetents: [.small, .medium, .large, .content],
             horizontalDetents: [.left, .right, .center]
         ) { shortCardStatus in
-            VStack {
-                Text("Content")
-                Text("Is short card: \(shortCardStatus.description)")
-            }
-        }
-    }
-}
-
-@available(iOS 16.0, macOS 13.0, *)
-#Preview {
-    var colors: [Color] = [.blue, .yellow, .purple, .pink, .red, .brown, .cyan, .gray, .green]
-    let color1 = colors.randomElement()!
-    colors.remove(at: colors.firstIndex(of: color1)!)
-    let color2 = colors.randomElement()!
-    
-    return ZStack {
-        LinearGradient(gradient: Gradient(colors: [color1, color2]), startPoint: .topLeading, endPoint: .bottomTrailing)
-            .ignoresSafeArea()
-        
-        BottomDrawer(
-            verticalDetents: [.small],
-            horizontalDetents: [.left]
-        ) { shortCardStatus in
-            VStack {
-                Text("Content")
-                Text("Is short card: \(shortCardStatus.description)")
-            }
+            Text("Content")
+            Text("Is short card: \(shortCardStatus.description)")
         }
     }
 }
